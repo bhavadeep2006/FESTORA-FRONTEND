@@ -68,7 +68,7 @@
   --shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
 }
 
-* {
+*, ::before, ::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -78,6 +78,7 @@
 
 html, body, #root {
   width: 100%;
+  max-width: 100%;
   min-height: 100%;
   background-color: var(--bg-page);
   color: var(--text-main);
@@ -102,6 +103,7 @@ body {
   max-width: 1280px;
   margin: 0 auto;
   width: 100%;
+  padding-inline: clamp(16px, 4vw, 32px);
 }
 
 /* Accessibility: Respect Reduced Motion */
