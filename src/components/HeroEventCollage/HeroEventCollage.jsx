@@ -95,28 +95,49 @@ export const HeroEventCollage = () => {
     setHoveredId(null);
   };
 
-  // Render Mobile Horizontal Touch-Swipe Carousel Deck
+  // Render Mobile Vertical Animated Event Showcase Deck (<= 992px)
   if (isMobile) {
+    const totalCards = 3;
+    const mobileCards = eventsData.slice(0, 3); // 3 Cards for stacked shuffle
+
     return (
-      <div className="hero-mobile-carousel-stage">
-        <div
-          ref={carouselTrackRef}
-          className="mobile-carousel-track"
+      <div className="mobile-vertical-deck-container">
+        <div 
+          className="mobile-vertical-deck-stage"
           onTouchStart={() => setIsInteracting(true)}
           onTouchEnd={() => setTimeout(() => setIsInteracting(false), 2000)}
-          onMouseDown={() => setIsInteracting(true)}
-          onMouseUp={() => setTimeout(() => setIsInteracting(false), 2000)}
         >
-          {mobileList.map((evt, idx) => {
-            const isActive = idx === activeMobileIndex;
+          {mobileCards.map((evt, idx) => {
+            // Calculate relative stack offset from active Mobile Index
+            const positionOffset = (idx - activeMobileIndex + totalCards) % totalCards;
+            
+            // Stack depth values for vertical layered shuffle
+            const isFront = positionOffset === 0;
+            const isMiddle = positionOffset === 1;
+            const isBack = positionOffset === 2;
+
+            const yPos = isFront ? 0 : isMiddle ? 16 : 32;
+            const scale = isFront ? 1 : isMiddle ? 0.95 : 0.9;
+            const opacity = isFront ? 1 : isMiddle ? 0.85 : 0.65;
+            const zIndex = isFront ? 30 : isMiddle ? 20 : 10;
+            const rotate = isFront ? 0 : isMiddle ? -1 : 1;
+
             return (
               <motion.div
                 key={evt.id}
-                className={`mobile-carousel-card ${isActive ? 'is-active' : ''}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileTap={{ scale: 0.985 }}
+                className={`mobile-deck-card ${isFront ? 'is-front' : ''}`}
+                animate={{
+                  y: yPos,
+                  scale: scale,
+                  opacity: opacity,
+                  rotate: rotate,
+                  zIndex: zIndex,
+                }}
+                transition={{
+                  duration: 0.6,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                whileTap={{ scale: isFront ? 0.98 : scale }}
                 onClick={() => setActiveMobileIndex(idx)}
               >
                 <Link to={`/events/${evt.id}`} className="poster-link">
@@ -159,14 +180,14 @@ export const HeroEventCollage = () => {
           })}
         </div>
 
-        {/* Carousel Indicator Dots */}
+        {/* Stack Indicator Bar */}
         <div className="mobile-carousel-dots">
-          {mobileList.map((_, dotIdx) => (
+          {mobileCards.map((_, dotIdx) => (
             <button
               key={dotIdx}
               className={`carousel-dot ${dotIdx === activeMobileIndex ? 'active' : ''}`}
               onClick={() => setActiveMobileIndex(dotIdx)}
-              aria-label={`Go to event ${dotIdx + 1}`}
+              aria-label={`Show fest poster ${dotIdx + 1}`}
             />
           ))}
         </div>
