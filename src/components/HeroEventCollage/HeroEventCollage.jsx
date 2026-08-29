@@ -79,9 +79,11 @@ export const HeroEventCollage = () => {
           style={{ x: topX, y: topY }}
           onMouseEnter={() => setHoveredId('top')}
           onMouseLeave={() => setHoveredId(null)}
-          initial={{ opacity: 0, y: 30, rotate: -4 }}
-          animate={{ opacity: 1, y: 0, rotate: -2 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          initial={{ opacity: 0, y: 35, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: '-20px' }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: isMobile ? 0.15 : 0.2 }}
+          whileTap={{ scale: 0.985 }}
         >
           <Link to={`/events/${posterTop.id}`} className="poster-link">
             <div className="poster-top-bar">
@@ -102,9 +104,11 @@ export const HeroEventCollage = () => {
           style={{ x: fgX, y: fgY, rotateX: fgRotateX, rotateY: fgRotateY }}
           onMouseEnter={() => setHoveredId('featured')}
           onMouseLeave={() => setHoveredId(null)}
-          initial={{ opacity: 0, scale: 0.94, y: 40 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.0 }}
+          initial={{ opacity: 0, scale: 0.96, y: 35 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={{ once: true, margin: '-20px' }}
+          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+          whileTap={{ scale: 0.985 }}
         >
           <Link to={`/events/${featured.id}`} className="poster-link">
             <div className="featured-flyer-header">
@@ -141,15 +145,17 @@ export const HeroEventCollage = () => {
           </Link>
         </motion.div>
 
-        {/* 3. LEFT SUPPORTING POSTER (CBIT Concert) - Stagger delay 0.35s */}
+        {/* 3. LEFT SUPPORTING POSTER (CBIT Concert) - Stagger delay 0.25s */}
         <motion.div
           className={`collage-poster poster-left ${hoveredId === 'left' ? 'is-hovered' : ''}`}
           style={{ x: leftX, y: leftY }}
           onMouseEnter={() => setHoveredId('left')}
           onMouseLeave={() => setHoveredId(null)}
-          initial={{ opacity: 0, x: -30, rotate: 6 }}
-          animate={{ opacity: 1, x: 0, rotate: 3 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
+          initial={{ opacity: 0, y: 35, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: '-20px' }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: isMobile ? 0.25 : 0.35 }}
+          whileTap={{ scale: 0.985 }}
         >
           <Link to={`/events/${posterLeft.id}`} className="poster-link">
             <div className="left-flyer-image-wrap">
@@ -167,15 +173,17 @@ export const HeroEventCollage = () => {
           </Link>
         </motion.div>
 
-        {/* 4. RIGHT SUPPORTING POSTER (VNR Robo Wars) - Stagger delay 0.45s */}
+        {/* 4. RIGHT SUPPORTING POSTER (VNR Robo Wars) - Stagger delay 0.35s */}
         <motion.div
           className={`collage-poster poster-right ${hoveredId === 'right' ? 'is-hovered' : ''}`}
           style={{ x: rightX, y: rightY }}
           onMouseEnter={() => setHoveredId('right')}
           onMouseLeave={() => setHoveredId(null)}
-          initial={{ opacity: 0, x: 30, rotate: -5 }}
-          animate={{ opacity: 1, x: 0, rotate: -3 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
+          initial={{ opacity: 0, y: 35, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: '-20px' }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: isMobile ? 0.35 : 0.45 }}
+          whileTap={{ scale: 0.985 }}
         >
           <Link to={`/events/${posterRight.id}`} className="poster-link">
             <div className="right-poster-header">
