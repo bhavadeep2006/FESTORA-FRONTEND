@@ -392,25 +392,82 @@
   transform: translate(2px, -2px);
 }
 
-/* Responsive Handling */
+/* Responsive Handling - Touch Swipe Carousel on Mobile (<= 992px) */
 @media (max-width: 992px) {
   .hero-event-collage-stage {
     min-height: auto;
-    padding: 1rem 0;
+    width: 100%;
+    padding: 0.5rem 0 1rem 0;
+    perspective: none;
+    overflow: hidden;
   }
+  
   .collage-container {
+    position: relative;
+    width: 100%;
     max-width: 100%;
     height: auto;
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
     gap: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 1.25rem 1.25rem 1.25rem;
+    box-sizing: border-box;
+    scrollbar-width: none; /* Firefox */
   }
+
+  .collage-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+
+  /* Base Reset for Carousel Cards on Mobile */
   .poster-top,
   .poster-featured,
   .poster-left,
   .poster-right {
-    position: static;
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
     transform: none !important;
-    width: 100%;
-    max-width: 360px;
+    flex: 0 0 84%; /* Peek hint of next card */
+    max-width: 320px;
+    height: auto;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    box-sizing: border-box;
+  }
+
+  .poster-featured {
+    order: 1;
+    width: 84%;
+  }
+  .poster-top {
+    order: 2;
+    width: 84%;
+    background: var(--surface-card);
+  }
+  .poster-left {
+    order: 3;
+    width: 84%;
+  }
+  .poster-right {
+    order: 4;
+    width: 84%;
+  }
+
+  .featured-flyer-header {
+    height: 160px;
+  }
+
+  .left-flyer-image-wrap {
+    height: 110px;
   }
 }
+
