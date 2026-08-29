@@ -40,6 +40,26 @@ const CountUpStat = ({ target, label }) => {
 };
 
 export const Hero = () => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.05
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 16 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
   return (
     <section className="hero-container">
       {/* Background Subtle Gradient Mesh */}
@@ -47,32 +67,32 @@ export const Hero = () => {
 
       <div className="hero-content-grid">
         
-        {/* Left Column: Editorial Headline & CTAs */}
+        {/* Left Column / Mobile Top: Staggered Hero Text & CTAs */}
         <motion.div
           className="hero-text-col"
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
         >
-          {/* Badge with slow subtle pulsing green dot */}
-          <div className="hero-pill-badge">
+          {/* 1. Badge with slow subtle pulsing green dot */}
+          <motion.div className="hero-pill-badge" variants={itemVariants}>
             <span className="live-pulse-dot" />
             <span>LIVE IN HYDERABAD</span>
-          </div>
+          </motion.div>
 
-          {/* Main Headline */}
-          <h1 className="hero-main-title">
-            Where Campus <br />
+          {/* 2. Main Headline */}
+          <motion.h1 className="hero-main-title" variants={itemVariants}>
+            Where Campus <br className="desktop-break" />
             <span className="title-highlight">Comes Alive</span>
-          </h1>
+          </motion.h1>
 
-          {/* Subtitle */}
-          <p className="hero-description">
+          {/* 3. Subtitle */}
+          <motion.p className="hero-description" variants={itemVariants}>
             Discover cultural festivals, technical hackathons, esports tournaments, and workshops across IIIT, JNTU, CBIT, OU, and top Hyderabad universities. Book verified student passes in seconds.
-          </p>
+          </motion.p>
 
-          {/* CTAs */}
-          <div className="hero-cta-group">
+          {/* 4. CTAs */}
+          <motion.div className="hero-cta-group" variants={itemVariants}>
             <Link to="/events" className="hero-primary-btn">
               <span>Explore Events</span>
               <ArrowRight size={18} />
@@ -81,22 +101,27 @@ export const Hero = () => {
             <Link to="/register" className="hero-secondary-btn">
               <span>Host an Event</span>
             </Link>
-          </div>
+          </motion.div>
 
-          {/* Stat Badges with Count-Up */}
-          <div className="hero-stats-row">
+          {/* 5. Stat Badges with Count-Up */}
+          <motion.div className="hero-stats-row" variants={itemVariants}>
             <CountUpStat target="100+" label="Partner Colleges" />
             <div className="stat-divider" />
             <CountUpStat target="50000+" label="Student Attendees" />
             <div className="stat-divider" />
             <CountUpStat target="500+" label="Live Fests" />
-          </div>
+          </motion.div>
         </motion.div>
 
-        {/* Right Column: Physical Event Poster Collage Composition */}
-        <div className="hero-canvas-col">
+        {/* Right Column / Mobile Bottom: Physical Event Poster Collage / Carousel */}
+        <motion.div 
+          className="hero-canvas-col"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+        >
           <HeroEventCollage />
-        </div>
+        </motion.div>
 
       </div>
     </section>

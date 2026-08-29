@@ -174,35 +174,65 @@
   box-shadow: var(--shadow-md);
 }
 
-@media (max-width: 992px) {
+@media (max-width: 767px) {
   .hero-container {
-    padding: 2.5rem 1.25rem 3rem 1.25rem;
+    padding: 1.5rem 1rem 2.5rem 1rem;
     overflow: hidden;
   }
   .hero-content-grid {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 2rem;
+    gap: 1.75rem;
+  }
+  .desktop-break {
+    display: block;
+  }
+  .hero-pill-badge {
+    margin-bottom: 1rem;
+  }
+  .hero-main-title {
+    font-size: clamp(2.2rem, 9.5vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
   }
   .hero-description {
-    margin-left: auto;
-    margin-right: auto;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+    padding: 0 4px;
   }
   .hero-cta-group {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.85rem;
-    margin-bottom: 2rem;
+    flex-direction: column;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto 1.75rem auto;
+    gap: 0.75rem;
   }
   .hero-primary-btn, .hero-secondary-btn {
     width: 100%;
+    max-width: 360px;
+    height: 52px;
     justify-content: center;
+    padding: 0 1.5rem;
+    font-size: 0.95rem;
   }
   .hero-stats-row {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    padding-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .stat-box {
+    gap: 2px;
+  }
+  .stat-number {
+    font-size: 1.2rem;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    line-height: 1.2;
   }
   .stat-divider {
     display: none;

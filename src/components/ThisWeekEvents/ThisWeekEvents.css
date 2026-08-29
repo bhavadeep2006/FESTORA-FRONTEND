@@ -102,13 +102,26 @@
   transform: translateX(3px);
 }
 
-@media (max-width: 992px) {
+@media (max-width: 767px) {
+  .this-week-section {
+    padding: 1.5rem 1rem;
+  }
   .this-week-bar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 1rem;
+    padding: 1.25rem 1rem;
   }
   .this-week-items-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    overflow-x: visible;
+  }
+  .this-week-item {
     width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    justify-content: space-between;
   }
 }
