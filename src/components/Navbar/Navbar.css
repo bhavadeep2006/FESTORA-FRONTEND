@@ -242,6 +242,7 @@
 @media (max-width: 768px) {
   .navbar-inner {
     padding: 0.75rem 1rem;
+    gap: 8px;
   }
   .desktop-nav-links {
     display: none;
@@ -249,12 +250,33 @@
   .mobile-hamburger {
     display: block;
   }
-  .brand-pill-tag {
-    display: none;
-  }
   .brand-title {
-    font-size: 1.15rem;
-    letter-spacing: 0.12em;
+    font-size: 1.05rem;
+    letter-spacing: 0.1em;
+  }
+  .brand-pill-tag {
+    padding: 2px 6px;
+    font-size: 0.625rem;
+  }
+  .navbar-actions {
+    gap: 0.5rem;
+  }
+  .nav-icon-btn, .theme-toggle-btn-header {
+    width: 34px;
+    height: 34px;
   }
 }
+
+@media (max-width: 480px) {
+  .navbar-inner {
+    padding: 0.65rem 0.85rem;
+  }
+  .brand-title-box {
+    gap: 4px;
+  }
+  .brand-pill-tag {
+    display: none; /* Hide badge only on extremely small screens < 360px if space constrained */
+  }
+}
+
 
