@@ -205,39 +205,48 @@
   margin: 0;
 }
 
-/* Schedule Timeline */
+/* Schedule Timeline Card Styling */
 .schedule-timeline {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  position: relative;
-  padding-left: 0.5rem;
+  gap: 1rem;
+  width: 100%;
 }
 
-.timeline-node {
+.schedule-item-card {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-card);
+  transition: all 0.2s ease;
 }
 
-.timeline-node-time {
-  width: 140px;
+.schedule-item-card:hover {
+  border-color: var(--strong-lavender);
+  background: var(--surface-card);
+}
+
+.schedule-time-badge {
   font-size: 0.825rem;
   font-weight: 800;
   color: var(--strong-lavender);
+  background: var(--very-light-lavender);
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(196, 181, 253, 0.4);
   flex-shrink: 0;
+  min-width: 100px;
+  text-align: center;
 }
 
-.timeline-node-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--strong-lavender);
-  box-shadow: 0 0 8px var(--strong-lavender);
-  flex-shrink: 0;
+.schedule-info-box {
+  flex: 1;
 }
 
-.timeline-node-content h4 {
+.schedule-item-title {
   font-size: 0.95rem;
   font-weight: 800;
   color: var(--text-main);
@@ -352,5 +361,37 @@
 @media (max-width: 900px) {
   .detail-main-layout {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .sidebar-sticky-card {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .detail-top-bar {
+    padding: 0.75rem 1rem;
+  }
+  .detail-banner-box {
+    height: 220px;
+  }
+  .detail-hero-content {
+    margin-top: -50px;
+  }
+  .detail-block-card {
+    padding: 1.25rem;
+    border-radius: 20px;
+    margin-bottom: 1.25rem;
+  }
+  .schedule-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+  }
+  .schedule-time-badge {
+    min-width: auto;
   }
 }

@@ -34,7 +34,7 @@ export const EventDetailPage = () => {
         </div>
       </div>
 
-      {/* Main Hero Header */}
+      {/* Main Hero Header: Image, Title, & Key Event Info Top */}
       <div className="detail-hero-header">
         <div className="detail-banner-box">
           <img src={event.banner} alt={event.title} className="detail-banner-img" />
@@ -114,11 +114,10 @@ export const EventDetailPage = () => {
               <h2 className="block-title">Event Schedule & Timeline</h2>
               <div className="schedule-timeline">
                 {event.schedule.map((item, index) => (
-                  <div key={index} className="timeline-node">
-                    <div className="timeline-node-time">{item.time}</div>
-                    <div className="timeline-node-dot" />
-                    <div className="timeline-node-content">
-                      <h4>{item.title}</h4>
+                  <div key={index} className="schedule-item-card">
+                    <div className="schedule-time-badge">{item.time}</div>
+                    <div className="schedule-info-box">
+                      <h4 className="schedule-item-title">{item.title}</h4>
                     </div>
                   </div>
                 ))}

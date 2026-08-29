@@ -12,6 +12,8 @@ import RegisterPage from './pages/RegisterPage';
 import CollegesPage from './pages/CollegesPage';
 import AboutPage from './pages/AboutPage';
 
+import ScrollToTop from './components/ScrollToTop';
+
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
@@ -22,6 +24,7 @@ function AppContent() {
 
   return (
     <div className="festora-app-root">
+      <ScrollToTop />
       <AnimatePresence mode="wait">
         {isLoading ? (
           <FestoraLoader key="festora-loader" onComplete={handleLoaderComplete} />
