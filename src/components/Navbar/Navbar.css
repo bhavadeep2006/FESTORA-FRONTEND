@@ -352,6 +352,11 @@
     width: 34px;
     height: 34px;
   }
+  .profile-dropdown-card {
+    right: -10px;
+    width: 240px;
+    max-width: calc(100vw - 32px);
+  }
 }
 
 @media (max-width: 480px) {
