@@ -11,6 +11,8 @@ import EventDetailPage from './pages/EventDetailPage';
 import RegisterPage from './pages/RegisterPage';
 import CollegesPage from './pages/CollegesPage';
 import AboutPage from './pages/AboutPage';
+import ProfilePage from './pages/ProfilePage';
+import RegisteredTicketsPage from './pages/RegisteredTicketsPage';
 
 import ScrollToTop from './components/ScrollToTop';
 
@@ -39,6 +41,8 @@ function AppContent() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/colleges" element={<CollegesPage />} />
                 <Route path="/about" element={<AboutPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/tickets" element={<RegisteredTicketsPage />} />
               </Routes>
             </main>
             <Footer />

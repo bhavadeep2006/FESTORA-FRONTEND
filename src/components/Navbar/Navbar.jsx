@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FestoraLogo } from '../FestoraLogo/FestoraLogo';
-import { Search, Sun, Moon, Menu, X } from 'lucide-react';
+import { Search, Sun, Moon, Menu, X, User, Ticket, LogOut } from 'lucide-react';
+import { userProfile } from '../../data/mockData';
 import './Navbar.css';
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
+  const dropdownRef = useRef(null);
+
   // Theme state initialization with localStorage & system preference
   const [theme, setTheme] = useState(() => {
     try {
@@ -43,6 +47,17 @@ export const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const toggleTheme = () => {
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
@@ -53,6 +68,12 @@ export const Navbar = () => {
       navigate(`/events?search=${encodeURIComponent(searchQuery)}`);
       setSearchOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    setProfileDropdownOpen(false);
+    setMobileMenuOpen(false);
+    navigate('/');
   };
 
   return (
@@ -109,6 +130,49 @@ export const Navbar = () => {
             )}
           </button>
 
+          {/* User Profile Button & Dropdown */}
+          <div className="profile-menu-wrapper" ref={dropdownRef}>
+            <button
+              className={`nav-icon-btn profile-btn ${profileDropdownOpen ? 'active' : ''}`}
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              aria-label="User Profile Account"
+              title="User Account"
+            >
+              <User size={18} />
+            </button>
+
+            {profileDropdownOpen && (
+              <div className="profile-dropdown-card">
+                <div className="dropdown-user-header">
+                  <span className="dropdown-user-name">{userProfile.name}</span>
+                  <span className="dropdown-user-email">{userProfile.email}</span>
+                </div>
+                <div className="dropdown-divider" />
+                <Link
+                  to="/profile"
+                  className="dropdown-item-btn"
+                  onClick={() => setProfileDropdownOpen(false)}
+                >
+                  <User size={16} />
+                  <span>My Profile</span>
+                </Link>
+                <Link
+                  to="/tickets"
+                  className="dropdown-item-btn"
+                  onClick={() => setProfileDropdownOpen(false)}
+                >
+                  <Ticket size={16} />
+                  <span>My Tickets</span>
+                </Link>
+                <div className="dropdown-divider" />
+                <button className="dropdown-item-btn logout-btn" onClick={handleLogout}>
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* Mobile Hamburger Toggle */}
           <button 
             className="mobile-hamburger" 
@@ -147,6 +211,8 @@ export const Navbar = () => {
           <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
           <Link to="/events" onClick={() => setMobileMenuOpen(false)}>Events</Link>
           <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
+          <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
+          <Link to="/tickets" onClick={() => setMobileMenuOpen(false)}>Registered Tickets</Link>
 
           <div className="mobile-theme-row">
             <span>Theme Mode</span>

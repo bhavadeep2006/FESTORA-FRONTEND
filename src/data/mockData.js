@@ -187,3 +187,83 @@ export const humanStories = [
   }
 ];
 
+export const userProfile = {
+  name: "Bhavadeep Reddy",
+  email: "bhavadeep@example.com",
+  phone: "+91 98765 43210",
+  college: "IIIT Hyderabad",
+  year: "3rd Year",
+  branch: "Computer Science & Engineering",
+  city: "Hyderabad",
+  avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=300&auto=format&fit=crop",
+  bio: "Tech enthusiast, hackathon participant, and campus cultural coordinator."
+};
+
+export const registeredTickets = [
+  {
+    ticketId: "FST-2026-00124",
+    eventId: "felicity-2026",
+    eventTitle: "FELICITY 2026 — Annual Cultural & Tech Fest",
+    college: "IIIT Hyderabad",
+    location: "Gachibowli, Hyderabad",
+    date: "Mar 14 - 16, 2026",
+    time: "09:00 AM - 10:00 PM IST",
+    ticketType: "FREE STUDENT PASS",
+    price: "Free Student Pass",
+    status: "CONFIRMED",
+    badgeColor: "#22C55E",
+    banner: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop",
+    registeredOn: "Feb 12, 2026",
+    qrPlaceholder: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=FST-2026-00124-BHAVADEEP"
+  },
+  {
+    ticketId: "FST-2026-00389",
+    eventId: "hyd-hack-4",
+    eventTitle: "HYD-HACK 4.0 National Hackathon",
+    college: "JNTU Hyderabad",
+    location: "Kukatpally, Hyderabad",
+    date: "Mar 20 - 21, 2026",
+    time: "36-Hour Non-stop Sprint",
+    ticketType: "TEAM HACKER PASS",
+    price: "Free Entry",
+    status: "CONFIRMED",
+    badgeColor: "#22C55E",
+    banner: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1200&auto=format&fit=crop",
+    registeredOn: "Feb 18, 2026",
+    qrPlaceholder: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=FST-2026-00389-BHAVADEEP"
+  },
+  {
+    ticketId: "FST-2026-00512",
+    eventId: "cyber-pulse-hyd",
+    eventTitle: "CYBER PULSE Pro-Nite ft. EDM Stars",
+    college: "CBIT Hyderabad",
+    location: "Gandipet, Hyderabad",
+    date: "Apr 02, 2026",
+    time: "06:00 PM - 01:00 AM IST",
+    ticketType: "VIP EARLY PASS",
+    price: "₹ 399",
+    status: "CONFIRMED",
+    badgeColor: "#8B5CF6",
+    banner: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1200&auto=format&fit=crop",
+    registeredOn: "Feb 22, 2026",
+    qrPlaceholder: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=FST-2026-00512-BHAVADEEP"
+  },
+  {
+    ticketId: "FST-2026-00780",
+    eventId: "robo-wars-vnr",
+    eventTitle: "ROBO WARS Heavyweight Arena",
+    college: "VNR VJIET",
+    location: "Bachupally, Hyderabad",
+    date: "Apr 10 - 11, 2026",
+    time: "10:00 AM - 06:00 PM IST",
+    ticketType: "ARENA PASS",
+    price: "Free Entry",
+    status: "UPCOMING",
+    badgeColor: "#3B82F6",
+    banner: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1200&auto=format&fit=crop",
+    registeredOn: "Feb 26, 2026",
+    qrPlaceholder: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=FST-2026-00780-BHAVADEEP"
+  }
+];
+
+
