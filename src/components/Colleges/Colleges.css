@@ -1,0 +1,96 @@
+/* Colleges Styles */
+
+.colleges-section {
+  padding: 4.5rem 2rem;
+  background: var(--surface-card);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.colleges-title-box {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.colleges-eyebrow {
+  font-size: 0.775rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--strong-lavender);
+}
+
+.colleges-heading {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0.35rem 0 0 0;
+}
+
+/* Marquee Track */
+.colleges-marquee-track {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+.colleges-marquee-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: max-content;
+  animation: marqueeScroll 28s linear infinite;
+}
+
+.colleges-marquee-track:hover .colleges-marquee-content {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.college-logo-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1rem 1.75rem;
+  border-radius: 20px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.college-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.college-icon {
+  color: var(--strong-lavender);
+}
+
+.college-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 0.15rem 0;
+  white-space: nowrap;
+}
+
+.college-city {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

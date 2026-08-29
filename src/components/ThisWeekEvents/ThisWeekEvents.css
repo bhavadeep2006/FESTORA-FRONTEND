@@ -1,0 +1,114 @@
+/* ThisWeekEvents Styles */
+
+.this-week-section {
+  padding: 1.25rem 2rem;
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.this-week-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1.5rem;
+}
+
+.this-week-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.825rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--strong-lavender);
+  flex-shrink: 0;
+}
+
+.flame-icon {
+  color: var(--strong-lavender);
+}
+
+.this-week-items-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-grow: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.this-week-items-row::-webkit-scrollbar {
+  display: none;
+}
+
+.this-week-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text-main);
+  background: var(--surface-card);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-card);
+  transition: all var(--duration-micro) ease;
+  white-space: nowrap;
+}
+
+.this-week-item:hover {
+  border-color: var(--strong-lavender);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.this-week-date {
+  font-size: 0.775rem;
+  font-weight: 800;
+  color: var(--strong-lavender);
+  background: var(--very-light-lavender);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.this-week-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.this-week-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.this-week-venue {
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.item-arrow {
+  color: var(--strong-lavender);
+  transition: transform var(--duration-micro) ease;
+}
+
+.this-week-item:hover .item-arrow {
+  transform: translateX(3px);
+}
+
+@media (max-width: 992px) {
+  .this-week-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .this-week-items-row {
+    width: 100%;
+  }
+}
