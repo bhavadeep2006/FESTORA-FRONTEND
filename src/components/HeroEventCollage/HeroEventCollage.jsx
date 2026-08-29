@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { eventsData } from '../../data/mockData';
@@ -7,11 +7,17 @@ import './HeroEventCollage.css';
 
 /**
  * HeroEventCollage Component
- * Physical college fest poster collage with human staggered entrance and subtle desktop-only 3D cursor tilt.
+ * Desktop: Physical college fest poster collage with subtle 3D cursor tilt.
+ * Mobile (<= 992px): Horizontal swipeable animated carousel deck with peek hint and 4.5s autoplay.
  */
 export const HeroEventCollage = () => {
   const [hoveredId, setHoveredId] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeMobileIndex, setActiveMobileIndex] = useState(0);
+  const [isInteracting, setIsInteracting] = useState(false);
+
+  const mobileList = eventsData.slice(0, 4);
+  const carouselTrackRef = useRef(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -22,12 +28,37 @@ export const HeroEventCollage = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Autoplay Timer for Mobile Carousel (4.5s)
+  useEffect(() => {
+    if (!isMobile || isInteracting) return;
+
+    const timer = setInterval(() => {
+      setActiveMobileIndex((prev) => (prev + 1) % mobileList.length);
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [isMobile, isInteracting, mobileList.length]);
+
+  // Scroll track to active card index on autoplay change
+  useEffect(() => {
+    if (!isMobile || !carouselTrackRef.current) return;
+    const container = carouselTrackRef.current;
+    const cards = container.querySelectorAll('.mobile-carousel-card');
+    if (cards[activeMobileIndex]) {
+      cards[activeMobileIndex].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'start',
+      });
+    }
+  }, [activeMobileIndex, isMobile]);
+
   const featured = eventsData[0];  // IIIT Felicity 2026
   const posterTop = eventsData[1];  // JNTUH Hyd Hack 4.0
   const posterLeft = eventsData[2]; // CBIT Cyber Pulse Pro-Nite
   const posterRight = eventsData[3];// VNR Robo Wars
 
-  // Mouse Parallax Motion Values
+  // Mouse Parallax Motion Values (Desktop)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -35,20 +66,19 @@ export const HeroEventCollage = () => {
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
-  // Subtle 3D Depth (2-4 degrees response on Desktop, disabled on Mobile)
-  const fgX = useTransform(smoothX, [-0.5, 0.5], isMobile ? [0, 0] : [10, -10]);
-  const fgY = useTransform(smoothY, [-0.5, 0.5], isMobile ? [0, 0] : [8, -8]);
-  const fgRotateX = useTransform(smoothY, [-0.5, 0.5], isMobile ? [0, 0] : [3, -3]);
-  const fgRotateY = useTransform(smoothX, [-0.5, 0.5], isMobile ? [0, 0] : [-3, 3]);
+  const fgX = useTransform(smoothX, [-0.5, 0.5], [10, -10]);
+  const fgY = useTransform(smoothY, [-0.5, 0.5], [8, -8]);
+  const fgRotateX = useTransform(smoothY, [-0.5, 0.5], [3, -3]);
+  const fgRotateY = useTransform(smoothX, [-0.5, 0.5], [-3, 3]);
 
-  const topX = useTransform(smoothX, [-0.5, 0.5], isMobile ? [0, 0] : [-6, 6]);
-  const topY = useTransform(smoothY, [-0.5, 0.5], isMobile ? [0, 0] : [-5, 5]);
+  const topX = useTransform(smoothX, [-0.5, 0.5], [-6, 6]);
+  const topY = useTransform(smoothY, [-0.5, 0.5], [-5, 5]);
 
-  const leftX = useTransform(smoothX, [-0.5, 0.5], isMobile ? [0, 0] : [-12, 12]);
-  const leftY = useTransform(smoothY, [-0.5, 0.5], isMobile ? [0, 0] : [8, -8]);
+  const leftX = useTransform(smoothX, [-0.5, 0.5], [-12, 12]);
+  const leftY = useTransform(smoothY, [-0.5, 0.5], [8, -8]);
 
-  const rightX = useTransform(smoothX, [-0.5, 0.5], isMobile ? [0, 0] : [8, -8]);
-  const rightY = useTransform(smoothY, [-0.5, 0.5], isMobile ? [0, 0] : [-10, 10]);
+  const rightX = useTransform(smoothX, [-0.5, 0.5], [8, -8]);
+  const rightY = useTransform(smoothY, [-0.5, 0.5], [-10, 10]);
 
   const handleMouseMove = (e) => {
     if (isMobile) return;
@@ -65,6 +95,86 @@ export const HeroEventCollage = () => {
     setHoveredId(null);
   };
 
+  // Render Mobile Horizontal Touch-Swipe Carousel Deck
+  if (isMobile) {
+    return (
+      <div className="hero-mobile-carousel-stage">
+        <div
+          ref={carouselTrackRef}
+          className="mobile-carousel-track"
+          onTouchStart={() => setIsInteracting(true)}
+          onTouchEnd={() => setTimeout(() => setIsInteracting(false), 2000)}
+          onMouseDown={() => setIsInteracting(true)}
+          onMouseUp={() => setTimeout(() => setIsInteracting(false), 2000)}
+        >
+          {mobileList.map((evt, idx) => {
+            const isActive = idx === activeMobileIndex;
+            return (
+              <motion.div
+                key={evt.id}
+                className={`mobile-carousel-card ${isActive ? 'is-active' : ''}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                whileTap={{ scale: 0.985 }}
+                onClick={() => setActiveMobileIndex(idx)}
+              >
+                <Link to={`/events/${evt.id}`} className="poster-link">
+                  <div className="mobile-card-banner">
+                    <img src={evt.banner} alt={evt.title} className="flyer-banner-img" />
+                    <div className="flyer-gradient" />
+                    <div className="flyer-top-pills">
+                      <span className="flyer-pill-featured">{evt.tag}</span>
+                      <span className="flyer-arrow-circle">
+                        <ArrowUpRight size={15} />
+                      </span>
+                    </div>
+                    <div className="flyer-date-stamp">
+                      <Calendar size={11} /> {evt.date}
+                    </div>
+                  </div>
+
+                  <div className="mobile-card-body">
+                    <span className="flyer-cat-label">
+                      {evt.category} &bull; {evt.college}
+                    </span>
+                    <h3 className="flyer-main-title">{evt.title}</h3>
+                    <div className="flyer-meta-row">
+                      <span className="flyer-meta-item">
+                        <MapPin size={12} /> {evt.location}
+                      </span>
+                      <span className="flyer-meta-item">{evt.time}</span>
+                    </div>
+                    <div className="flyer-footer-bar">
+                      <span className="flyer-price">{evt.price}</span>
+                      <span className="flyer-cta-btn">
+                        <span>Get Pass</span>
+                        <Ticket size={13} />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Carousel Indicator Dots */}
+        <div className="mobile-carousel-dots">
+          {mobileList.map((_, dotIdx) => (
+            <button
+              key={dotIdx}
+              className={`carousel-dot ${dotIdx === activeMobileIndex ? 'active' : ''}`}
+              onClick={() => setActiveMobileIndex(dotIdx)}
+              aria-label={`Go to event ${dotIdx + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Render Desktop Interactive 3D Composition Wall (Completely Unchanged)
   return (
     <div
       className="hero-event-collage-stage"
@@ -73,7 +183,7 @@ export const HeroEventCollage = () => {
     >
       <div className="collage-container">
 
-        {/* 1. TOP SUPPORTING POSTER (JNTUH Hackathon) - Stagger delay 0.2s */}
+        {/* 1. TOP SUPPORTING POSTER */}
         <motion.div
           className={`collage-poster poster-top ${hoveredId === 'top' ? 'is-hovered' : ''}`}
           style={{ x: topX, y: topY }}
@@ -82,8 +192,7 @@ export const HeroEventCollage = () => {
           initial={{ opacity: 0, y: 35, scale: 0.97 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: '-20px' }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: isMobile ? 0.15 : 0.2 }}
-          whileTap={{ scale: 0.985 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
         >
           <Link to={`/events/${posterTop.id}`} className="poster-link">
             <div className="poster-top-bar">
@@ -98,7 +207,7 @@ export const HeroEventCollage = () => {
           </Link>
         </motion.div>
 
-        {/* 2. MAIN FEATURED POSTER (IIIT Felicity) - Stagger delay 0.0s */}
+        {/* 2. MAIN FEATURED POSTER */}
         <motion.div
           className={`collage-poster poster-featured ${hoveredId === 'featured' ? 'is-hovered' : ''}`}
           style={{ x: fgX, y: fgY, rotateX: fgRotateX, rotateY: fgRotateY }}
@@ -108,7 +217,6 @@ export const HeroEventCollage = () => {
           whileInView={{ opacity: 1, scale: 1, y: 0 }}
           viewport={{ once: true, margin: '-20px' }}
           transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
-          whileTap={{ scale: 0.985 }}
         >
           <Link to={`/events/${featured.id}`} className="poster-link">
             <div className="featured-flyer-header">
@@ -145,7 +253,7 @@ export const HeroEventCollage = () => {
           </Link>
         </motion.div>
 
-        {/* 3. LEFT SUPPORTING POSTER (CBIT Concert) - Stagger delay 0.25s */}
+        {/* 3. LEFT SUPPORTING POSTER */}
         <motion.div
           className={`collage-poster poster-left ${hoveredId === 'left' ? 'is-hovered' : ''}`}
           style={{ x: leftX, y: leftY }}
@@ -154,8 +262,7 @@ export const HeroEventCollage = () => {
           initial={{ opacity: 0, y: 35, scale: 0.97 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: '-20px' }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: isMobile ? 0.25 : 0.35 }}
-          whileTap={{ scale: 0.985 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
         >
           <Link to={`/events/${posterLeft.id}`} className="poster-link">
             <div className="left-flyer-image-wrap">
@@ -173,7 +280,7 @@ export const HeroEventCollage = () => {
           </Link>
         </motion.div>
 
-        {/* 4. RIGHT SUPPORTING POSTER (VNR Robo Wars) - Stagger delay 0.35s */}
+        {/* 4. RIGHT SUPPORTING POSTER */}
         <motion.div
           className={`collage-poster poster-right ${hoveredId === 'right' ? 'is-hovered' : ''}`}
           style={{ x: rightX, y: rightY }}
@@ -182,8 +289,7 @@ export const HeroEventCollage = () => {
           initial={{ opacity: 0, y: 35, scale: 0.97 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: '-20px' }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: isMobile ? 0.35 : 0.45 }}
-          whileTap={{ scale: 0.985 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
         >
           <Link to={`/events/${posterRight.id}`} className="poster-link">
             <div className="right-poster-header">
