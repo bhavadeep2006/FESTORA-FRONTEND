@@ -106,7 +106,7 @@
   gap: 0.85rem;
 }
 
-.nav-icon-btn, .theme-toggle-btn {
+.nav-icon-btn, .theme-toggle-btn-header {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,7 +120,7 @@
   transition: all 0.2s ease;
 }
 
-.nav-icon-btn:hover, .theme-toggle-btn:hover {
+.nav-icon-btn:hover, .theme-toggle-btn-header:hover {
   background: var(--very-light-lavender);
   color: var(--strong-lavender);
   border-color: var(--strong-lavender);
@@ -130,7 +130,7 @@
   transition: transform 0.25s ease;
 }
 
-.theme-toggle-btn:hover .theme-icon {
+.theme-toggle-btn-header:hover .theme-icon {
   transform: rotate(15deg);
 }
 
@@ -240,11 +240,21 @@
 }
 
 @media (max-width: 768px) {
+  .navbar-inner {
+    padding: 0.75rem 1rem;
+  }
   .desktop-nav-links {
     display: none;
   }
   .mobile-hamburger {
     display: block;
+  }
+  .brand-pill-tag {
+    display: none;
+  }
+  .brand-title {
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
   }
 }
 
