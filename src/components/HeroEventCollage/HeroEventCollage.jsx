@@ -28,16 +28,16 @@ export const HeroEventCollage = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Autoplay Timer for Mobile Carousel (4.5s)
+  // Autoplay Timer for Mobile Vertical Deck Shuffle (3.5s)
   useEffect(() => {
-    if (!isMobile || isInteracting) return;
+    if (!isMobile) return;
 
     const timer = setInterval(() => {
-      setActiveMobileIndex((prev) => (prev + 1) % mobileList.length);
-    }, 4500);
+      setActiveMobileIndex((prev) => (prev + 1) % 3);
+    }, 3500);
 
     return () => clearInterval(timer);
-  }, [isMobile, isInteracting, mobileList.length]);
+  }, [isMobile]);
 
   // Scroll track to active card index on autoplay change
   useEffect(() => {
