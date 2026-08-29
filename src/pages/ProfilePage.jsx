@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { userProfile } from '../data/mockData';
+import { userProfile as defaultUserProfile } from '../data/mockData';
 import { User, Mail, Phone, GraduationCap, Calendar, BookOpen, MapPin, Edit3, ShieldCheck, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './ProfilePage.css';
 
 export const ProfilePage = () => {
-  const [profile, setProfile] = useState(userProfile);
+  const { user, updateUserProfile, userTickets, hostedEvents } = useAuth();
+  const currentProfile = user || defaultUserProfile;
+  const profile = currentProfile;
+
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(userProfile);
+  const [formData, setFormData] = useState(currentProfile);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -17,7 +21,7 @@ export const ProfilePage = () => {
 
   const handleSave = (e) => {
     e.preventDefault();
-    setProfile(formData);
+    updateUserProfile(formData);
     setIsEditing(false);
   };
 
@@ -61,6 +65,39 @@ export const ProfilePage = () => {
             <span>{isEditing ? 'Cancel Edit' : 'Edit Profile'}</span>
           </button>
         </motion.div>
+
+        {/* Profile Statistics Summary */}
+        <div className="dashboard-stats-grid" style={{ marginBottom: '32px' }}>
+          <div className="dash-stat-card">
+            <div className="stat-icon-wrapper purple">
+              <Ticket size={20} />
+            </div>
+            <div>
+              <span className="dash-stat-num">{userTickets?.length || 4}</span>
+              <span className="dash-stat-label">Registered Events</span>
+            </div>
+          </div>
+
+          <div className="dash-stat-card">
+            <div className="stat-icon-wrapper green">
+              <Calendar size={20} />
+            </div>
+            <div>
+              <span className="dash-stat-num">{userTickets?.filter(t => t.status !== 'PAST').length || 3}</span>
+              <span className="dash-stat-label">Upcoming Events</span>
+            </div>
+          </div>
+
+          <div className="dash-stat-card">
+            <div className="stat-icon-wrapper blue">
+              <GraduationCap size={20} />
+            </div>
+            <div>
+              <span className="dash-stat-num">{hostedEvents?.length || 2}</span>
+              <span className="dash-stat-label">Hosted Events</span>
+            </div>
+          </div>
+        </div>
 
         {/* Edit Form Modal or View Card Grid */}
         {isEditing ? (

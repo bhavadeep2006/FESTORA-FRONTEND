@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { eventsData } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
 import {
   MapPin,
   Calendar,
@@ -11,15 +12,39 @@ import {
   ArrowLeft,
   CheckCircle2,
   ShieldCheck,
-  Share2
+  Share2,
+  Heart
 } from 'lucide-react';
 import './EventDetailPage.css';
 
 export const EventDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, savedEventIds, toggleSaveEvent } = useAuth();
+  const [copiedMsg, setCopiedMsg] = React.useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const event = eventsData.find((e) => e.id === id) || eventsData[0];
+  const isSaved = savedEventIds?.includes(event.id);
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: event.title,
+          text: `Check out ${event.title} on Festora!`,
+          url: window.location.href,
+        });
+      } catch (err) {}
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedMsg(true);
+      setTimeout(() => setCopiedMsg(false), 2000);
+    }
+  };
 
   return (
     <div className="event-detail-view">
@@ -151,19 +176,30 @@ export const EventDetailPage = () => {
               <span>{event.attendees}</span>
             </div>
 
-            <Link to={`/register?event=${event.id}`} className="register-now-cta">
-              <Ticket size={18} />
-              <span>Register for Pass</span>
-            </Link>
+            {isAuthenticated ? (
+              <Link to={`/register?event=${event.id}`} className="register-now-cta">
+                <Ticket size={18} />
+                <span>Register for Pass</span>
+              </Link>
+            ) : (
+              <Link to={`/signin?redirect=/register?event=${event.id}`} className="register-now-cta">
+                <Ticket size={18} />
+                <span>Sign in to Register</span>
+              </Link>
+            )}
 
             <p className="sidebar-note">
               Instant QR pass generated after registration. Validated at campus gates.
             </p>
 
             <div className="sidebar-share-row">
-              <button className="share-btn">
+              <button className="share-btn" onClick={() => toggleSaveEvent(event.id)}>
+                <Heart size={15} fill={isSaved ? '#EF4444' : 'transparent'} color={isSaved ? '#EF4444' : 'currentColor'} />
+                <span>{isSaved ? 'Saved' : 'Save Event'}</span>
+              </button>
+              <button className="share-btn" onClick={handleShare}>
                 <Share2 size={15} />
-                <span>Share Event</span>
+                <span>{copiedMsg ? 'Link Copied!' : 'Share Event'}</span>
               </button>
             </div>
           </div>

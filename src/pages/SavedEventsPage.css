@@ -1,0 +1,78 @@
+/* Saved Events Page Styling */
+
+.saved-events-page-view {
+  min-height: calc(100vh - 80px);
+  padding: clamp(24px, 4vw, 48px) 0;
+  background-color: var(--bg-page);
+}
+
+.saved-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+  font-weight: 800;
+  color: var(--text-main);
+  margin-top: 6px;
+  letter-spacing: -0.02em;
+}
+
+.saved-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.saved-empty-card {
+  text-align: center;
+  padding: 80px 24px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  max-width: 520px;
+  margin: 40px auto 0 auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.heart-icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--strong-lavender);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.saved-empty-card h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.saved-empty-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.explore-btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--strong-lavender);
+  color: #FFFFFF;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+  transition: transform var(--duration-micro) ease, background-color var(--duration-hover) ease;
+}
+
+.explore-btn-cta:hover {
+  background: var(--deep-lavender);
+  transform: translateY(-1px);
+}

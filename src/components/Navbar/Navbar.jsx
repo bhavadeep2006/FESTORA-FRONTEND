@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FestoraLogo } from '../FestoraLogo/FestoraLogo';
-import { Search, Sun, Moon, Menu, X, User, Ticket, LogOut } from 'lucide-react';
-import { userProfile } from '../../data/mockData';
+import { Search, Sun, Moon, Menu, X, User, Ticket, LogOut, LogIn, Heart, CalendarPlus } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
 export const Navbar = () => {
@@ -12,6 +12,7 @@ export const Navbar = () => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
+  const { user, isAuthenticated, logout } = useAuth();
   const dropdownRef = useRef(null);
 
   // Theme state initialization with localStorage & system preference
@@ -71,6 +72,7 @@ export const Navbar = () => {
   };
 
   const handleLogout = () => {
+    logout();
     setProfileDropdownOpen(false);
     setMobileMenuOpen(false);
     navigate('/');
@@ -130,22 +132,28 @@ export const Navbar = () => {
             )}
           </button>
 
-          {/* User Profile Button & Dropdown */}
+          {/* User Profile / Auth Control */}
           <div className="profile-menu-wrapper" ref={dropdownRef}>
-            <button
-              className={`nav-icon-btn profile-btn ${profileDropdownOpen ? 'active' : ''}`}
-              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-              aria-label="User Profile Account"
-              title="User Account"
-            >
-              <User size={18} />
-            </button>
+            {isAuthenticated ? (
+              <button
+                className={`nav-icon-btn profile-btn ${profileDropdownOpen ? 'active' : ''}`}
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                aria-label="User Profile Account"
+                title="User Account"
+              >
+                <User size={18} />
+              </button>
+            ) : (
+              <Link to="/signin" className="navbar-signin-btn">
+                Sign In
+              </Link>
+            )}
 
-            {profileDropdownOpen && (
+            {isAuthenticated && profileDropdownOpen && (
               <div className="profile-dropdown-card">
                 <div className="dropdown-user-header">
-                  <span className="dropdown-user-name">{userProfile.name}</span>
-                  <span className="dropdown-user-email">{userProfile.email}</span>
+                  <span className="dropdown-user-name">{user?.name || 'User'}</span>
+                  <span className="dropdown-user-email">{user?.email || ''}</span>
                 </div>
                 <div className="dropdown-divider" />
                 <Link
@@ -163,6 +171,22 @@ export const Navbar = () => {
                 >
                   <Ticket size={16} />
                   <span>My Tickets</span>
+                </Link>
+                <Link
+                  to="/saved-events"
+                  className="dropdown-item-btn"
+                  onClick={() => setProfileDropdownOpen(false)}
+                >
+                  <Heart size={16} />
+                  <span>Saved Events</span>
+                </Link>
+                <Link
+                  to="/host-event"
+                  className="dropdown-item-btn"
+                  onClick={() => setProfileDropdownOpen(false)}
+                >
+                  <CalendarPlus size={16} />
+                  <span>Host an Event</span>
                 </Link>
                 <div className="dropdown-divider" />
                 <button className="dropdown-item-btn logout-btn" onClick={handleLogout}>
@@ -211,8 +235,27 @@ export const Navbar = () => {
           <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
           <Link to="/events" onClick={() => setMobileMenuOpen(false)}>Events</Link>
           <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
-          <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
-          <Link to="/tickets" onClick={() => setMobileMenuOpen(false)}>Registered Tickets</Link>
+          
+          {isAuthenticated ? (
+            <>
+              <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
+              <Link to="/tickets" onClick={() => setMobileMenuOpen(false)}>My Tickets</Link>
+              <Link to="/saved-events" onClick={() => setMobileMenuOpen(false)}>Saved Events</Link>
+              <Link to="/host-event" onClick={() => setMobileMenuOpen(false)}>Host an Event</Link>
+              <button 
+                className="mobile-drawer-logout"
+                onClick={handleLogout}
+              >
+                <LogOut size={16} />
+                <span>Logout</span>
+              </button>
+            </>
+          ) : (
+            <Link to="/signin" className="mobile-drawer-signin" onClick={() => setMobileMenuOpen(false)}>
+              <LogIn size={16} />
+              <span>Sign In</span>
+            </Link>
+          )}
 
           <div className="mobile-theme-row">
             <span>Theme Mode</span>

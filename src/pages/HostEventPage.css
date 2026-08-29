@@ -1,0 +1,126 @@
+/* Host Event Page Styling */
+
+.host-event-page-view {
+  min-height: calc(100vh - 80px);
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px);
+  background-color: var(--bg-page);
+}
+
+.host-header-box {
+  margin-bottom: 32px;
+}
+
+.host-page-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+  font-weight: 800;
+  color: var(--text-main);
+  margin-top: 6px;
+  letter-spacing: -0.02em;
+}
+
+.host-page-subtext {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.host-form-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  padding: clamp(24px, 4vw, 40px);
+  box-shadow: var(--shadow-md);
+}
+
+.form-section-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--strong-lavender);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.host-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.host-form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.host-form-grid input,
+.host-form-grid select,
+.host-form-grid textarea {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.925rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color var(--duration-hover) ease, box-shadow var(--duration-hover) ease;
+  box-sizing: border-box;
+}
+
+.host-form-grid textarea {
+  height: auto;
+  padding: 12px 14px;
+}
+
+.host-form-grid select option {
+  background: var(--surface-card);
+  color: var(--text-main);
+}
+
+.host-form-grid input:focus,
+.host-form-grid select:focus,
+.host-form-grid textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(196, 181, 253, 0.25);
+}
+
+.host-success-card {
+  text-align: center;
+  padding: clamp(40px, 6vw, 64px) clamp(24px, 4vw, 40px);
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.success-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-top: 16px;
+}
+
+.success-heading-msg {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--strong-lavender);
+  margin-top: 8px;
+}
+
+.success-body-msg {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-top: 12px;
+}
+
+@media (max-width: 640px) {
+  .host-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

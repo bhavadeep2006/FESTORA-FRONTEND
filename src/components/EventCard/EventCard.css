@@ -80,6 +80,34 @@
   transition: all 0.2s ease;
 }
 
+.card-bookmark-btn {
+  position: absolute;
+  top: 0.85rem;
+  right: 3.25rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(24, 21, 31, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+.card-bookmark-btn:hover {
+  transform: scale(1.1);
+  background: rgba(24, 21, 31, 0.8);
+}
+
+.card-bookmark-btn.saved {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #EF4444;
+}
+
 .event-card-container:hover .card-quick-arrow {
   background: var(--strong-lavender);
   color: var(--white);

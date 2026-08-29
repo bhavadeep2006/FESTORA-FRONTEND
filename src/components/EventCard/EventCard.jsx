@@ -1,10 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Calendar, Users, Ticket, ArrowUpRight } from 'lucide-react';
+import { MapPin, Calendar, Users, Ticket, ArrowUpRight, Heart } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import './EventCard.css';
 
 export const EventCard = ({ event }) => {
+  const { savedEventIds, toggleSaveEvent } = useAuth();
+  const isSaved = savedEventIds?.includes(event.id);
+
+  const handleBookmarkClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleSaveEvent(event.id);
+  };
+
   return (
     <motion.div
       className="event-card-container"
@@ -18,6 +28,18 @@ export const EventCard = ({ event }) => {
           <span className="card-tag-badge" style={{ backgroundColor: event.badgeColor || '#8B5CF6' }}>
             {event.tag}
           </span>
+
+          {/* Save Bookmark Button */}
+          <button 
+            type="button"
+            className={`card-bookmark-btn ${isSaved ? 'saved' : ''}`} 
+            onClick={handleBookmarkClick}
+            aria-label={isSaved ? 'Saved Event' : 'Save Event'}
+            title={isSaved ? 'Saved' : 'Save Event'}
+          >
+            <Heart size={16} fill={isSaved ? '#EF4444' : 'transparent'} color={isSaved ? '#EF4444' : '#FFFFFF'} />
+          </button>
+
           <div className="card-quick-arrow">
             <ArrowUpRight size={18} />
           </div>
@@ -55,3 +77,4 @@ export const EventCard = ({ event }) => {
     </motion.div>
   );
 };
+

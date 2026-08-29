@@ -101,7 +101,7 @@ export const Hero = () => {
             </motion.div>
 
             <motion.div whileTap={{ scale: 0.97 }}>
-              <Link to="/register" className="hero-secondary-btn">
+              <Link to="/host-event" className="hero-secondary-btn">
                 <span>Host an Event</span>
               </Link>
             </motion.div>

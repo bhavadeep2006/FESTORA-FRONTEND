@@ -85,15 +85,36 @@ export const EventsPage = () => {
           >
             All Events
           </button>
-          {categoriesData.map((cat) => (
-            <button
-              key={cat.id}
-              className={`cat-pill-btn ${selectedCategory === cat.id ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(cat.id)}
-            >
-              {cat.title}
-            </button>
-          ))}
+          <button
+            className={`cat-pill-btn ${selectedCategory === 'cultural' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('cultural')}
+          >
+            Cultural
+          </button>
+          <button
+            className={`cat-pill-btn ${selectedCategory === 'tech' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('tech')}
+          >
+            Hackathon
+          </button>
+          <button
+            className={`cat-pill-btn ${selectedCategory === 'sports' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('sports')}
+          >
+            Sports
+          </button>
+          <button
+            className={`cat-pill-btn ${selectedCategory === 'workshops' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('workshops')}
+          >
+            Workshop
+          </button>
+          <button
+            className={`cat-pill-btn ${selectedCategory === 'gaming' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('gaming')}
+          >
+            Esports
+          </button>
         </div>
 
         {/* Results Counter */}
