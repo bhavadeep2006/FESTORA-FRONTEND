@@ -60,7 +60,8 @@ export const FeaturedEvents = () => {
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-30px' }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            whileTap={{ scale: 0.985 }}
           >
             <Link to={`/events/${mainFeatured.id}`} className="editorial-main-link">
               <div className="editorial-banner-box">
@@ -98,8 +99,9 @@ export const FeaturedEvents = () => {
                 className="editorial-side-card"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                viewport={{ once: true, margin: '-20px' }}
+                transition={{ duration: 0.4, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                whileTap={{ scale: 0.985 }}
               >
                 <Link to={`/events/${evt.id}`} className="side-card-link">
                   <div className="side-thumb-box">

@@ -93,14 +93,18 @@ export const Hero = () => {
 
           {/* 4. CTAs */}
           <motion.div className="hero-cta-group" variants={itemVariants}>
-            <Link to="/events" className="hero-primary-btn">
-              <span>Explore Events</span>
-              <ArrowRight size={18} />
-            </Link>
+            <motion.div whileTap={{ scale: 0.97 }}>
+              <Link to="/events" className="hero-primary-btn">
+                <span>Explore Events</span>
+                <ArrowRight size={18} />
+              </Link>
+            </motion.div>
 
-            <Link to="/register" className="hero-secondary-btn">
-              <span>Host an Event</span>
-            </Link>
+            <motion.div whileTap={{ scale: 0.97 }}>
+              <Link to="/register" className="hero-secondary-btn">
+                <span>Host an Event</span>
+              </Link>
+            </motion.div>
           </motion.div>
 
           {/* 5. Stat Badges with Count-Up */}
