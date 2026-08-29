@@ -28,28 +28,35 @@ export const FestoraLoader = ({ onComplete }) => {
     "Welcome to Festora"
   ];
 
-  // Stage sequence timing
+  // Stage sequence timing & Fallback safety
   useEffect(() => {
-    // Stage 1 -> Stage 2 (Logo reveal)
-    const timer1 = setTimeout(() => setStage(2), 250);
-    // Stage 2 -> Stage 3 (Wordmark reveal)
-    const timer2 = setTimeout(() => setStage(3), 600);
-    // Stage 3 -> Stage 4 (Progress bar active)
-    const timer3 = setTimeout(() => setStage(4), 1000);
+    const timer1 = setTimeout(() => setStage(2), 200);
+    const timer2 = setTimeout(() => setStage(3), 500);
+    const timer3 = setTimeout(() => setStage(4), 800);
+
+    // Absolute fallback safety: if for any reason progress is stuck, force completion after 3.5s
+    const fallbackTimer = setTimeout(() => {
+      if (!hasCompletedRef.current) {
+        hasCompletedRef.current = true;
+        setProgress(100);
+        if (onComplete) onComplete();
+      }
+    }, 3600);
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
+      clearTimeout(fallbackTimer);
     };
-  }, []);
+  }, [onComplete]);
 
-  // Fluid progress calculation targeting ~2.4 seconds of progress fill
+  // Fluid progress calculation targeting ~2 seconds of progress fill
   useEffect(() => {
     if (stage < 4) return;
 
     const startTime = Date.now();
-    const duration = 2400; // ms to reach 100%
+    const duration = 1800; // ms to reach 100%
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -60,7 +67,7 @@ export const FestoraLoader = ({ onComplete }) => {
       if (pct >= 100) {
         clearInterval(interval);
       }
-    }, 30);
+    }, 25);
 
     return () => clearInterval(interval);
   }, [stage]);
@@ -80,12 +87,12 @@ export const FestoraLoader = ({ onComplete }) => {
     if (progress >= 100 && !hasCompletedRef.current) {
       hasCompletedRef.current = true;
 
-      // Brief 400ms pause so user visually registers 100% completion tick, then trigger navigation
+      // Brief 500ms pause so user visually registers 100% completion tick, then trigger navigation
       setTimeout(() => {
         if (onComplete) {
           onComplete();
         }
-      }, 400);
+      }, 500);
     }
   }, [progress, onComplete]);
 

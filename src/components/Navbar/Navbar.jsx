@@ -78,9 +78,6 @@ export const Navbar = () => {
           <Link to="/events" className={`nav-item ${location.pathname.startsWith('/events') ? 'active' : ''}`}>
             Events
           </Link>
-          <Link to="/colleges" className={`nav-item ${location.pathname === '/colleges' ? 'active' : ''}`}>
-            Colleges
-          </Link>
           <Link to="/about" className={`nav-item ${location.pathname === '/about' ? 'active' : ''}`}>
             About
           </Link>
@@ -149,7 +146,6 @@ export const Navbar = () => {
         <div className="mobile-drawer">
           <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
           <Link to="/events" onClick={() => setMobileMenuOpen(false)}>Events</Link>
-          <Link to="/colleges" onClick={() => setMobileMenuOpen(false)}>Colleges</Link>
           <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
 
           <div className="mobile-theme-row">

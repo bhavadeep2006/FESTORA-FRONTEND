@@ -7,7 +7,7 @@
 }
 
 .detail-top-bar {
-  background: var(--white);
+  background: var(--surface-card);
   border-bottom: 1px solid var(--border-subtle);
   padding: 1rem 2rem;
 }
@@ -32,7 +32,7 @@
 
 .detail-hero-header {
   position: relative;
-  background: var(--white);
+  background: var(--surface-card);
   border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 3rem;
 }
@@ -53,7 +53,7 @@
 .detail-banner-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(24, 21, 31, 0.7) 0%, transparent 60%);
+  background: linear-gradient(to top, rgba(24, 21, 31, 0.75) 0%, transparent 60%);
 }
 
 .detail-hero-content {
@@ -72,7 +72,7 @@
 .detail-category-badge {
   padding: 6px 14px;
   border-radius: 12px;
-  background: var(--white);
+  background: var(--surface-card);
   color: var(--strong-lavender);
   font-size: 0.775rem;
   font-weight: 800;
@@ -84,7 +84,7 @@
 .detail-tag-badge {
   padding: 6px 14px;
   border-radius: 12px;
-  color: var(--white);
+  color: #FFFFFF;
   font-size: 0.775rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -95,16 +95,16 @@
 .detail-title {
   font-size: clamp(2.2rem, 5vw, 3.25rem);
   font-weight: 800;
-  color: var(--white);
+  color: #FFFFFF;
   line-height: 1.15;
   margin: 0 0 0.5rem 0;
-  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .detail-organizer-tag {
   font-size: 0.95rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0 0 2.5rem 0;
 }
 
@@ -112,11 +112,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.25rem;
-  background: var(--white);
+  background: var(--surface-card);
   border-radius: 24px;
-  border: 1px solid rgba(196, 181, 253, 0.4);
+  border: 1px solid var(--border-card);
   padding: 1.5rem;
-  box-shadow: 0 15px 35px -10px rgba(139, 92, 246, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 .meta-card {
@@ -154,12 +154,12 @@
 }
 
 .detail-block-card {
-  background: var(--white);
+  background: var(--surface-card);
   border-radius: 28px;
-  border: 1px solid rgba(196, 181, 253, 0.35);
+  border: 1px solid var(--border-card);
   padding: 2.25rem;
   margin-bottom: 2rem;
-  box-shadow: 0 10px 25px -8px rgba(24, 21, 31, 0.03);
+  box-shadow: var(--shadow-sm);
 }
 
 .block-title {
@@ -183,7 +183,7 @@
   padding: 1.25rem 1.5rem;
   border-radius: 20px;
   background: var(--very-light-lavender);
-  border: 1px solid rgba(196, 181, 253, 0.4);
+  border: 1px solid var(--border-card);
 }
 
 .shield-icon {
@@ -273,11 +273,11 @@
 .sidebar-sticky-card {
   position: sticky;
   top: 100px;
-  background: var(--white);
+  background: var(--surface-card);
   border-radius: 28px;
-  border: 1px solid rgba(196, 181, 253, 0.4);
+  border: 1px solid var(--border-card);
   padding: 2rem;
-  box-shadow: 0 15px 35px -10px rgba(139, 92, 246, 0.15);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;

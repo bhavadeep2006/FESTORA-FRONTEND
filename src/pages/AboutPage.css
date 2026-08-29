@@ -7,7 +7,7 @@
 }
 
 .about-hero-section {
-  background: linear-gradient(135deg, #F5F3FF 0%, #FFFFFF 100%);
+  background: var(--surface-secondary);
   border-bottom: 1px solid var(--border-subtle);
   padding: 4.5rem 2rem 4rem 2rem;
   text-align: center;
@@ -40,11 +40,11 @@
 }
 
 .about-card {
-  background: var(--white);
+  background: var(--surface-card);
   border-radius: 28px;
-  border: 1px solid rgba(196, 181, 253, 0.35);
+  border: 1px solid var(--border-card);
   padding: 2.5rem;
-  box-shadow: 0 12px 30px -10px rgba(24, 21, 31, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .about-card-icon {
