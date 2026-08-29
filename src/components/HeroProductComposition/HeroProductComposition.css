@@ -486,7 +486,6 @@
   .bottom-right-card,
   .student-verification-badge {
     position: static;
-    transform: none !important;
     width: 100%;
     max-width: 380px;
   }

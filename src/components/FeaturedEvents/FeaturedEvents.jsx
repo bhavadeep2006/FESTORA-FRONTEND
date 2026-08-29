@@ -59,7 +59,7 @@ export const FeaturedEvents = () => {
             className="editorial-main-card"
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: '-30px' }}
             transition={{ duration: 0.5 }}
           >
             <Link to={`/events/${mainFeatured.id}`} className="editorial-main-link">
