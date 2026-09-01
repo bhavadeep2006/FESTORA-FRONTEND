@@ -39,9 +39,9 @@ export const WhyFestora = () => {
         {/* Section Header */}
         <div className="why-header">
           <span className="section-eyebrow">Our Mission & Platform Story</span>
-          <h2 className="why-title">Built for Students, Crafted for Campus Energy</h2>
+          <h2 className="why-title">Discover. Register. Experience.</h2>
           <p className="why-subtitle">
-            Festora replaces outdated paper entries and scattered messaging with a modern, transparent, and vibrant event ecosystem.
+            Festora brings concerts, hackathons, sports tournaments, workshops, and festivals into one modern, transparent, and vibrant event ecosystem.
           </p>
         </div>
 

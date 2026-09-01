@@ -8,28 +8,28 @@ export const HowFestoraWorks = () => {
     {
       num: '01',
       title: 'Discover',
-      desc: 'Find live college festivals, hackathons, and concerts happening around Hyderabad.',
+      desc: 'Find live festivals, hackathons, concerts, and workshops near you.',
       icon: Search,
       badge: 'Live Map & Feed'
     },
     {
       num: '02',
       title: 'Explore',
-      desc: 'See full event schedules, cash prize pools, venue maps, and host university details.',
+      desc: 'See full event schedules, prize pools, venue maps, and organizer details.',
       icon: Compass,
       badge: 'Transparent Details'
     },
     {
       num: '03',
       title: 'Register',
-      desc: 'Get instant QR entry passes verified directly with your student university ID.',
+      desc: 'Get instant digital QR entry passes verified directly with your account.',
       icon: Ticket,
       badge: 'Instant QR Pass'
     },
     {
       num: '04',
       title: 'Experience',
-      desc: 'Show your mobile pass at entry gates, participate, and enjoy non-stop campus energy.',
+      desc: 'Show your mobile pass at entry gates, participate, and enjoy unforgettable events.',
       icon: Sparkles,
       badge: 'Fast-Track Entry'
     }
@@ -41,10 +41,10 @@ export const HowFestoraWorks = () => {
         
         {/* Section Header */}
         <div className="how-works-header">
-          <span className="section-eyebrow">STUDENT & ORGANIZER JOURNEY</span>
+          <span className="section-eyebrow">ATTENDEE & ORGANIZER JOURNEY</span>
           <h2 className="how-works-title">How Festora Works</h2>
           <p className="how-works-subtitle">
-            From discovering campus fests in Hyderabad to stepping through gate entry in 4 simple steps.
+            From discovering events around you to stepping through gate entry in 4 simple steps.
           </p>
         </div>
 

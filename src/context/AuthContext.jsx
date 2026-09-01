@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { userProfile as defaultUserProfile, registeredTickets as defaultTickets, eventsData } from '../data/mockData';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -11,30 +11,25 @@ export const AuthProvider = ({ children }) => {
         return JSON.parse(savedUser);
       }
     } catch (e) {
-      console.error('Failed to parse saved auth state', e);
+      console.error('Failed to parse saved user state', e);
     }
-    return defaultUserProfile;
+    return null;
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    try {
-      const savedAuth = localStorage.getItem('festora_is_authenticated');
-      if (savedAuth !== null) {
-        return JSON.parse(savedAuth);
-      }
-    } catch (e) {
-      console.error('Failed to parse auth state', e);
-    }
-    return false; // Default to false so user can experience full sign in/out flow
+    const token = localStorage.getItem('festora_token');
+    return Boolean(token && localStorage.getItem('festora_user'));
   });
 
-  // Saved Events state
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+
+  // User Saved Events state
   const [savedEventIds, setSavedEventIds] = useState(() => {
     try {
       const saved = localStorage.getItem('festora_saved_events');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
-    return ['felicity-2026']; // Default sample saved event
+    return [];
   });
 
   // User Registered Tickets state
@@ -43,7 +38,7 @@ export const AuthProvider = ({ children }) => {
       const saved = localStorage.getItem('festora_tickets');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
-    return defaultTickets;
+    return [];
   });
 
   // User Hosted Events state
@@ -52,28 +47,7 @@ export const AuthProvider = ({ children }) => {
       const saved = localStorage.getItem('festora_hosted_events');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
-    return [
-      {
-        id: 'hack-hyd-2026',
-        title: 'Hyderabad Inter-College AI Summit',
-        category: 'Tech & Hackathons',
-        status: 'Published',
-        registrationsCount: 128,
-        date: 'Apr 25, 2026',
-        location: 'IIIT Hyderabad',
-        banner: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800&auto=format&fit=crop'
-      },
-      {
-        id: 'draft-cultural-fest',
-        title: 'Spring Acoustic Night',
-        category: 'Cultural Fests',
-        status: 'Draft',
-        registrationsCount: 0,
-        date: 'May 02, 2026',
-        location: 'CBIT Open Grounds',
-        banner: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop'
-      }
-    ];
+    return [];
   });
 
   // Organizer Private Auth State
@@ -87,12 +61,54 @@ export const AuthProvider = ({ children }) => {
 
   const [isOrganizerAuthenticated, setIsOrganizerAuthenticated] = useState(() => {
     try {
+      const orgToken = localStorage.getItem('festora_organizer_token');
       const saved = localStorage.getItem('festora_is_organizer_auth');
-      if (saved !== null) return JSON.parse(saved);
+      if (saved !== null && orgToken) return JSON.parse(saved);
     } catch (e) {}
     return false;
   });
 
+  // On mount, validate token via GET /api/auth/me if token exists
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const token = localStorage.getItem('festora_token');
+      if (!token) {
+        setUser(null);
+        setIsAuthenticated(false);
+        setIsLoadingAuth(false);
+        return;
+      }
+
+      try {
+        const data = await api.getMe();
+        if (data && data.user) {
+          const authUser = {
+            id: data.user.id,
+            name: data.user.full_name,
+            email: data.user.email,
+            phone: data.user.phone,
+            college: data.user.college,
+            year: data.user.year_of_study,
+            department: data.user.department,
+            avatar: data.user.avatar_url || data.user.avatar
+          };
+          setUser(authUser);
+          setIsAuthenticated(true);
+        } else {
+          logout();
+        }
+      } catch (err) {
+        console.warn('[Auth] Token validation failed:', err.message);
+        logout();
+      } finally {
+        setIsLoadingAuth(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  // Sync state changes to localStorage
   useEffect(() => {
     try {
       if (user) {
@@ -116,58 +132,102 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user, isAuthenticated, savedEventIds, userTickets, hostedEvents, organizerUser, isOrganizerAuthenticated]);
 
-  const login = async (email, password) => {
-    const newUser = {
-      ...defaultUserProfile,
-      email: email || defaultUserProfile.email,
-      name: email ? email.split('@')[0] : defaultUserProfile.name
-    };
-    setUser(newUser);
-    setIsAuthenticated(true);
-    return { success: true, user: newUser };
-  };
-
-  const organizerLogin = async (email, password) => {
-    // Demo Organizer Credentials Validation
-    if (email.trim().toLowerCase() === 'organizer@festora.demo' && password === 'Festora@123') {
-      const orgUser = {
-        name: 'Siddharth Rao',
-        email: 'organizer@festora.demo',
-        organization: 'IIIT Cultural Council',
-        role: 'Head Organizer',
-        college: 'IIIT Hyderabad',
-        phone: '+91 98765 12345',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'
-      };
-      setOrganizerUser(orgUser);
-      setIsOrganizerAuthenticated(true);
-      return { success: true, user: orgUser };
+  const setAuthSession = (token, rawUser) => {
+    if (token) {
+      localStorage.setItem('festora_token', token);
     }
-    return { success: false, error: 'Invalid organizer credentials.' };
-  };
-
-  const organizerLogout = () => {
-    setOrganizerUser(null);
-    setIsOrganizerAuthenticated(false);
-  };
-
-  const signup = async ({ name, email, password, college, year, phone }) => {
-    const newUser = {
-      ...defaultUserProfile,
-      name,
-      email,
-      phone: phone || defaultUserProfile.phone,
-      college: college || defaultUserProfile.college,
-      year: year || defaultUserProfile.year
+    const formattedUser = {
+      id: rawUser.id,
+      name: rawUser.full_name || rawUser.name,
+      email: rawUser.email,
+      phone: rawUser.phone,
+      college: rawUser.college,
+      year: rawUser.year_of_study || rawUser.year,
+      department: rawUser.department,
+      avatar: rawUser.avatar_url || rawUser.avatar
     };
-    setUser(newUser);
+    setUser(formattedUser);
     setIsAuthenticated(true);
-    return { success: true, user: newUser };
+    return formattedUser;
+  };
+
+  const login = async (email, password) => {
+    const res = await api.login({ email, password });
+    if (res.token && res.user) {
+      const authUser = setAuthSession(res.token, res.user);
+      return { success: true, user: authUser };
+    }
+    throw new Error(res.message || 'Login failed.');
+  };
+
+  const googleLogin = async (credentialOrToken) => {
+    const res = await api.verifyGoogleToken(credentialOrToken);
+    if (res.token && res.user) {
+      const authUser = setAuthSession(res.token, res.user);
+      return { success: true, user: authUser };
+    }
+    throw new Error(res.message || 'Google authentication failed.');
+  };
+
+  const register = async (registerData) => {
+    const res = await api.register(registerData);
+    return res;
+  };
+
+  const verifyOtp = async (email, otp) => {
+    const res = await api.verifyOtp({ email, otp });
+    if (res.token && res.user) {
+      const authUser = setAuthSession(res.token, res.user);
+      return { success: true, user: authUser, message: res.message };
+    }
+    throw new Error(res.message || 'Verification failed.');
+  };
+
+  const resendOtp = async (email) => {
+    const res = await api.resendOtp(email);
+    return res;
   };
 
   const logout = () => {
+    localStorage.removeItem('festora_token');
+    localStorage.removeItem('festora_user');
+    localStorage.removeItem('festora_is_authenticated');
     setUser(null);
     setIsAuthenticated(false);
+  };
+
+  const organizerLogin = async (email, password) => {
+    try {
+      const res = await api.organizerLogin({ email, password });
+      if (res.token && res.organizer) {
+        localStorage.setItem('festora_organizer_token', res.token);
+        const orgUser = {
+          id: res.organizer.id,
+          name: res.organizer.name,
+          email: res.organizer.email,
+          organization: res.organizer.organization_name,
+          role: 'Head Organizer',
+          college: res.organizer.organization_name || 'IIIT Hyderabad',
+          phone: res.organizer.phone || '+91 98765 12345',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop'
+        };
+        setOrganizerUser(orgUser);
+        setIsOrganizerAuthenticated(true);
+        return { success: true, user: orgUser };
+      }
+      return { success: false, error: res.message || 'Invalid organizer credentials.' };
+    } catch (err) {
+      const msg = err.data?.message || err.message || 'Organizer login failed.';
+      return { success: false, error: msg };
+    }
+  };
+
+  const organizerLogout = () => {
+    localStorage.removeItem('festora_organizer_token');
+    localStorage.removeItem('festora_organizer_user');
+    localStorage.removeItem('festora_is_organizer_auth');
+    setOrganizerUser(null);
+    setIsOrganizerAuthenticated(false);
   };
 
   const updateUserProfile = (updatedData) => {
@@ -202,9 +262,14 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{
       user,
       isAuthenticated,
+      isLoadingAuth,
       login,
-      signup,
+      googleLogin,
+      register,
+      verifyOtp,
+      resendOtp,
       logout,
+      setAuthSession,
       updateUserProfile,
       savedEventIds,
       toggleSaveEvent,
@@ -230,4 +295,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

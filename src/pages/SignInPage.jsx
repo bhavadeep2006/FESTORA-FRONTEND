@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { FestoraLogo } from '../components/FestoraLogo/FestoraLogo';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 import './AuthPages.css';
 
-const GoogleIcon = () => (
-  <svg className="google-svg-icon" viewBox="0 0 24 24" width="20" height="20">
+export const GoogleIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24">
     <path
       fill="#4285F4"
       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -29,17 +30,27 @@ const GoogleIcon = () => (
 
 export const SignInPage = () => {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/profile';
+  const redirectTo = searchParams.get('redirect') || '/';
+  const urlError = searchParams.get('error');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (urlError === 'google_not_configured') {
+      setErrors({ form: 'Google OAuth is not configured on the backend server yet.' });
+    } else if (urlError === 'google_auth_failed') {
+      setErrors({ form: 'Google authentication failed or was cancelled.' });
+    }
+  }, [urlError]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -47,7 +58,7 @@ export const SignInPage = () => {
 
     if (!email.trim()) {
       newErrors.email = 'Please enter your email.';
-    } else if (!emailRegex.test(email)) {
+    } else if (!emailRegex.test(email.trim())) {
       newErrors.email = 'Please enter a valid email address.';
     }
 
@@ -64,30 +75,31 @@ export const SignInPage = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setErrors({});
     try {
-      await login(email, password);
+      await login(email.trim(), password);
       setFormSuccess(true);
       setTimeout(() => {
-        navigate(redirectTo);
-      }, 700);
+        navigate(redirectTo, { replace: true });
+      }, 500);
     } catch (err) {
-      setErrors({ form: 'Invalid credentials. Please try again.' });
+      const serverMsg = err.data?.message || err.message || 'Invalid email or password.';
+      setErrors({ form: serverMsg });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignIn = () => {
-    login('googleuser@gmail.com', 'password').then(() => {
-      navigate(redirectTo);
-    });
+    setIsGoogleLoading(true);
+    window.location.href = api.googleLoginUrl();
   };
 
   return (
     <div className="auth-container-page">
       <div className="auth-card-layout">
         
-        {/* Left Visual Branding Panel (Desktop) */}
+        {/* Left Visual Branding Panel */}
         <div className="auth-brand-side">
           <div className="brand-side-content">
             <div className="brand-badge-pill">FESTORA EXPERIENCE</div>
@@ -140,6 +152,7 @@ export const SignInPage = () => {
 
           {errors.form && (
             <div className="auth-alert error" role="alert">
+              <AlertCircle size={18} />
               <span>{errors.form}</span>
             </div>
           )}
@@ -222,9 +235,10 @@ export const SignInPage = () => {
             type="button"
             className="auth-btn-google"
             onClick={handleGoogleSignIn}
+            disabled={isGoogleLoading || isSubmitting}
           >
-            <GoogleIcon />
-            <span>Continue with Google</span>
+            <GoogleIcon size={18} />
+            <span>{isGoogleLoading ? 'Connecting to Google...' : 'Continue with Google'}</span>
           </button>
 
           {/* Footer Link */}

@@ -17,6 +17,7 @@ import RegisteredTicketsPage from './pages/RegisteredTicketsPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import { AuthSuccessPage } from './pages/AuthSuccessPage';
 import HostEventAuthPromptPage from './pages/HostEventAuthPromptPage';
 import HostEventPage from './pages/HostEventPage';
 import SavedEventsPage from './pages/SavedEventsPage';
@@ -84,6 +85,7 @@ function AppContent() {
                 <Route path="/signin" element={<SignInPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/auth-success" element={<AuthSuccessPage />} />
 
                 {/* Private Organizer Routes */}
                 <Route path="/organizer-login" element={<OrganizerLoginPage />} />

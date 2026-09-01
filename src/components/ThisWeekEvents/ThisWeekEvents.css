@@ -9,12 +9,12 @@
 .this-week-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
+  gap: 1.5rem;
   background: var(--surface-secondary);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
-  padding: 0.85rem 1.5rem;
+  padding: 0.75rem 1.25rem;
+  overflow: hidden;
 }
 
 .this-week-label {
@@ -26,10 +26,42 @@
   letter-spacing: 0.06em;
   color: var(--strong-lavender);
   flex-shrink: 0;
+  padding-right: 12px;
+  border-right: 1px solid var(--border-subtle);
 }
 
 .flame-icon {
   color: var(--strong-lavender);
+}
+
+.marquee-outer-container {
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  width: max-content;
+  animation: marquee-scroll 35s linear infinite;
+  will-change: transform;
+}
+
+.marquee-outer-container:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .this-week-items-row {
@@ -57,6 +89,11 @@
   border: 1px solid var(--border-card);
   transition: all var(--duration-micro) ease;
   white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .this-week-item:hover {

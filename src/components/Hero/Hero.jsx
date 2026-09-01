@@ -77,18 +77,18 @@ export const Hero = () => {
           {/* 1. Badge with slow subtle pulsing green dot */}
           <motion.div className="hero-pill-badge" variants={itemVariants}>
             <span className="live-pulse-dot" />
-            <span>LIVE IN HYDERABAD</span>
+            <span>DISCOVER LIVE EVENTS</span>
           </motion.div>
 
           {/* 2. Main Headline */}
           <motion.h1 className="hero-main-title" variants={itemVariants}>
-            Where Campus <br className="desktop-break" />
-            <span className="title-highlight">Comes Alive</span>
+            Discover Events <br className="desktop-break" />
+            <span className="title-highlight">That Excite You</span>
           </motion.h1>
 
           {/* 3. Subtitle */}
           <motion.p className="hero-description" variants={itemVariants}>
-            Discover cultural festivals, technical hackathons, esports tournaments, and workshops across IIIT, JNTU, CBIT, OU, and top Hyderabad universities. Book verified student passes in seconds.
+            Find concerts, festivals, workshops, sports, conferences, hackathons, and more — all in one place. Book verified digital passes in seconds.
           </motion.p>
 
           {/* 4. CTAs */}
@@ -102,18 +102,18 @@ export const Hero = () => {
 
             <motion.div whileTap={{ scale: 0.97 }}>
               <Link to="/host-event" className="hero-secondary-btn">
-                <span>Host an Event</span>
+                <span>Host Your Event</span>
               </Link>
             </motion.div>
           </motion.div>
 
           {/* 5. Stat Badges with Count-Up */}
           <motion.div className="hero-stats-row" variants={itemVariants}>
-            <CountUpStat target="100+" label="Partner Colleges" />
+            <CountUpStat target="100+" label="Verified Organizers" />
             <div className="stat-divider" />
-            <CountUpStat target="50000+" label="Student Attendees" />
+            <CountUpStat target="50000+" label="Event Attendees" />
             <div className="stat-divider" />
-            <CountUpStat target="500+" label="Live Fests" />
+            <CountUpStat target="500+" label="Live Events" />
           </motion.div>
         </motion.div>
 

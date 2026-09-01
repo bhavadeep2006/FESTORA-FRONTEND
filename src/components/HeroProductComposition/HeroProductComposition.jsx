@@ -224,7 +224,7 @@ export const HeroProductComposition = () => {
             </div>
             <div className="badge-text-group">
               <span className="badge-title">FESTORA GATEWAY</span>
-              <span className="badge-status">Hyderabad Student Verification Active</span>
+              <span className="badge-status">Digital QR Pass Verification Active</span>
             </div>
           </div>
         </motion.div>

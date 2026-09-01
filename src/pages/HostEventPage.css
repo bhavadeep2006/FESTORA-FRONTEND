@@ -52,12 +52,29 @@
   grid-column: 1 / -1;
 }
 
-.host-form-grid input,
-.host-form-grid select,
-.host-form-grid textarea {
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
   width: 100%;
-  height: 44px;
-  padding: 0 14px;
+}
+
+.input-wrapper .input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #9CA3AF);
+  pointer-events: none;
+  z-index: 2;
+  transition: color var(--duration-hover) ease;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px 0 44px !important;
   background: var(--surface-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -71,8 +88,19 @@
 }
 
 .host-form-grid textarea {
+  width: 100%;
   height: auto;
   padding: 12px 14px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.925rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color var(--duration-hover) ease, box-shadow var(--duration-hover) ease;
+  box-sizing: border-box;
 }
 
 .host-form-grid select option {
@@ -80,11 +108,27 @@
   color: var(--text-main);
 }
 
-.host-form-grid input:focus,
-.host-form-grid select:focus,
+.input-wrapper input:focus,
+.input-wrapper select:focus,
 .host-form-grid textarea:focus {
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(196, 181, 253, 0.25);
+}
+
+.input-wrapper:focus-within .input-icon {
+  color: var(--strong-lavender, #8B5CF6);
+}
+
+.input-wrapper.has-error input,
+.input-wrapper.has-error select {
+  border-color: #EF4444 !important;
+}
+
+.field-error-text {
+  font-size: 0.775rem;
+  color: #EF4444;
+  margin-top: 4px;
+  display: block;
 }
 
 .host-success-card {

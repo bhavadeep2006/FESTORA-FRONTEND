@@ -167,6 +167,52 @@
   font-weight: 600;
 }
 
+/* Html5Qrcode Camera Video Override Rules */
+#festora-qr-reader {
+  width: 100% !important;
+  height: 100% !important;
+  background: #000000 !important;
+  border: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#festora-qr-reader__scan_region {
+  width: 100% !important;
+  height: 100% !important;
+  background: #000000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+
+#festora-qr-reader__scan_region img,
+#festora-qr-reader img {
+  display: none !important;
+}
+
+#festora-qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: var(--radius-lg);
+  background: #000000 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#festora-qr-reader canvas {
+  display: none !important;
+}
+
+#festora-qr-reader__dashboard,
+#festora-qr-reader__header_message,
+#festora-qr-reader__status_span {
+  display: none !important;
+}
+
 .quick-code-input-group {
   display: flex;
   gap: 10px;

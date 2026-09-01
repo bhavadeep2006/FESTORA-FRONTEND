@@ -16,12 +16,12 @@ export const HyderabadSection = () => {
           <div>
             <div className="hyd-eyebrow">
               <Navigation size={14} className="nav-icon" />
-              <span>LIVE IN HYDERABAD &bull; CAMPUS ZONES</span>
+              <span>EXPLORE POPULAR HUBS & DESTINATIONS</span>
             </div>
-            <h2 className="hyd-title">Events Happening Around Hyderabad</h2>
+            <h2 className="hyd-title">Find Events Across Top Locations</h2>
           </div>
           <p className="hyd-desc">
-            Explore college festivals, hackathons, and cultural meets across Hyderabad's key university hubs.
+            Explore concerts, tech conventions, cultural festivals, and sports tournaments across top event destinations.
           </p>
         </div>
 

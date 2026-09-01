@@ -10,9 +10,9 @@ export const Colleges = () => {
         
         <div className="colleges-title-box">
           <span className="colleges-eyebrow">
-            <GraduationCap size={14} className="grad-icon" /> CAMPUS NETWORK
+            <Building2 size={14} className="grad-icon" /> FEATURED ORGANIZATIONS & UNIVERSITIES
           </span>
-          <h2 className="colleges-heading">Top Hyderabad Universities Hosting Events</h2>
+          <h2 className="colleges-heading">Top Partner Institutions & Organizations</h2>
         </div>
 
         {/* Clean Logo / Campus Strip */}

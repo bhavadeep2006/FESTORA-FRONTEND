@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { eventsData } from '../../data/mockData';
+import { api } from '../../services/api';
+import { eventsData as fallbackEvents } from '../../data/mockData';
 import { Calendar, MapPin, Ticket, Clock, ArrowRight, Sparkles } from 'lucide-react';
 import './UpcomingEvents.css';
 
 export const UpcomingEvents = () => {
+  const [eventsList, setEventsList] = useState([]);
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const response = await api.getPublicEvents();
+        if (response.events && response.events.length > 0) {
+          setEventsList(response.events);
+        } else {
+          setEventsList(fallbackEvents);
+        }
+      } catch (err) {
+        setEventsList(fallbackEvents);
+      }
+    };
+    loadEvents();
+  }, []);
+
   return (
     <section className="upcoming-section">
       <div className="section-container">
@@ -14,9 +33,9 @@ export const UpcomingEvents = () => {
         <div className="upcoming-header">
           <div>
             <span className="section-eyebrow">
-              <Sparkles size={13} className="eyebrow-icon" /> HYDERABAD & CAMPUS CALENDAR
+              <Sparkles size={13} className="eyebrow-icon" /> UPCOMING EVENT CALENDAR
             </span>
-            <h2 className="upcoming-title">Upcoming Fest Matrix</h2>
+            <h2 className="upcoming-title">Upcoming Events</h2>
           </div>
           <Link to="/events" className="upcoming-view-btn">
             <span>Full Schedule Matrix</span>
@@ -26,7 +45,7 @@ export const UpcomingEvents = () => {
 
         {/* Structured Timeline Matrix List */}
         <div className="timeline-list">
-          {eventsData.map((evt, idx) => (
+          {eventsList.map((evt, idx) => (
             <motion.div
               key={evt.id}
               className="timeline-item-row"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FestoraLogo } from '../FestoraLogo/FestoraLogo';
-import { Search, Sun, Moon, Menu, X, User, Ticket, LogOut, LogIn, Heart, CalendarPlus } from 'lucide-react';
+import { Search, Sun, Moon, Monitor, Menu, X, User, Ticket, LogOut, LogIn, Heart, CalendarPlus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
@@ -15,12 +15,10 @@ export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const dropdownRef = useRef(null);
 
-  // Theme state initialization with localStorage & system preference
-  const [theme, setTheme] = useState(() => {
+  // Theme mode state ('light' | 'dark' | 'system')
+  const [themeMode, setThemeMode] = useState(() => {
     try {
-      const saved = localStorage.getItem('festora-theme');
-      if (saved) return saved;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      return localStorage.getItem('festora-theme') || 'light';
     } catch (e) {
       return 'light';
     }
@@ -29,12 +27,58 @@ export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+  const changeThemeMode = (mode) => {
+    setThemeMode(mode);
     try {
-      localStorage.setItem('festora-theme', theme);
+      localStorage.setItem('festora-theme', mode);
     } catch (e) {}
-  }, [theme]);
+    window.dispatchEvent(new CustomEvent('festora-theme-change', { detail: mode }));
+  };
+
+  useEffect(() => {
+    const applyTheme = (modeToApply) => {
+      const activeMode = modeToApply || localStorage.getItem('festora-theme') || 'light';
+      let targetTheme = activeMode;
+      if (activeMode === 'system') {
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        targetTheme = isDark ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', targetTheme);
+    };
+
+    applyTheme(themeMode);
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemChange = () => {
+      const currentSaved = localStorage.getItem('festora-theme') || 'system';
+      if (currentSaved === 'system') {
+        applyTheme('system');
+      }
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemChange);
+    } else {
+      mediaQuery.addListener(handleSystemChange);
+    }
+
+    const handleCustomEvent = (e) => {
+      const newMode = e.detail || localStorage.getItem('festora-theme') || 'system';
+      setThemeMode(newMode);
+      applyTheme(newMode);
+    };
+
+    window.addEventListener('festora-theme-change', handleCustomEvent);
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleSystemChange);
+      } else {
+        mediaQuery.removeListener(handleSystemChange);
+      }
+      window.removeEventListener('festora-theme-change', handleCustomEvent);
+    };
+  }, [themeMode]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -88,7 +132,7 @@ export const Navbar = () => {
           <div className="brand-title-box">
             <span className="brand-title">FESTORA</span>
             <span className="brand-pill-tag">
-              <span className="live-pulse-dot" /> LIVE IN HYDERABAD
+              <span className="live-pulse-dot" /> LIVE EVENTS
             </span>
           </div>
         </Link>
@@ -118,20 +162,6 @@ export const Navbar = () => {
             <Search size={18} />
           </button>
 
-          {/* Theme Switcher Control */}
-          <button
-            className="theme-toggle-btn-header"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-          >
-            {theme === 'light' ? (
-              <Sun size={17} className="theme-icon sun-icon" />
-            ) : (
-              <Moon size={17} className="theme-icon moon-icon" />
-            )}
-          </button>
-
           {/* User Profile / Auth Control */}
           <div className="profile-menu-wrapper" ref={dropdownRef}>
             {isAuthenticated ? (
@@ -140,8 +170,13 @@ export const Navbar = () => {
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 aria-label="User Profile Account"
                 title="User Account"
+                style={{ overflow: 'hidden', padding: user?.avatar ? '2px' : undefined }}
               >
-                <User size={18} />
+                {user?.avatar ? (
+                  <img src={user.avatar} alt={user.name || 'Profile'} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <User size={18} />
+                )}
               </button>
             ) : (
               <Link to="/signin" className="navbar-signin-btn">
@@ -188,6 +223,92 @@ export const Navbar = () => {
                   <CalendarPlus size={16} />
                   <span>Host an Event</span>
                 </Link>
+
+                <div className="dropdown-divider" />
+
+                {/* Appearance Theme Selector */}
+                <div style={{ padding: '6px 12px 8px 12px' }}>
+                  <span style={{ fontSize: '0.725rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '8px' }}>
+                    Appearance
+                  </span>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button 
+                      type="button"
+                      className={`theme-opt-btn ${themeMode === 'light' ? 'active' : ''}`}
+                      onClick={(e) => { e.stopPropagation(); changeThemeMode('light'); }}
+                      style={{
+                        flex: 1,
+                        padding: '6px 4px',
+                        fontSize: '0.775rem',
+                        borderRadius: '6px',
+                        border: themeMode === 'light' ? '1px solid #8B5CF6' : '1px solid var(--border-card)',
+                        background: themeMode === 'light' ? 'rgba(139, 92, 246, 0.15)' : 'var(--surface-secondary)',
+                        color: themeMode === 'light' ? '#8B5CF6' : 'var(--text-main)',
+                        fontWeight: themeMode === 'light' ? 700 : 500,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Sun size={12} />
+                      <span>Light</span>
+                    </button>
+                    
+                    <button 
+                      type="button"
+                      className={`theme-opt-btn ${themeMode === 'dark' ? 'active' : ''}`}
+                      onClick={(e) => { e.stopPropagation(); changeThemeMode('dark'); }}
+                      style={{
+                        flex: 1,
+                        padding: '6px 4px',
+                        fontSize: '0.775rem',
+                        borderRadius: '6px',
+                        border: themeMode === 'dark' ? '1px solid #8B5CF6' : '1px solid var(--border-card)',
+                        background: themeMode === 'dark' ? 'rgba(139, 92, 246, 0.2)' : 'var(--surface-secondary)',
+                        color: themeMode === 'dark' ? '#8B5CF6' : 'var(--text-main)',
+                        fontWeight: themeMode === 'dark' ? 700 : 500,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Moon size={12} />
+                      <span>Dark</span>
+                    </button>
+
+                    <button 
+                      type="button"
+                      className={`theme-opt-btn ${themeMode === 'system' ? 'active' : ''}`}
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        changeThemeMode('system');
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: '6px 4px',
+                        fontSize: '0.775rem',
+                        borderRadius: '6px',
+                        border: themeMode === 'system' ? '1px solid #8B5CF6' : '1px solid var(--border-card)',
+                        background: themeMode === 'system' ? 'rgba(139, 92, 246, 0.2)' : 'var(--surface-secondary)',
+                        color: themeMode === 'system' ? '#8B5CF6' : 'var(--text-main)',
+                        fontWeight: themeMode === 'system' ? 700 : 500,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Monitor size={12} />
+                      <span>System</span>
+                    </button>
+                  </div>
+                </div>
+
                 <div className="dropdown-divider" />
                 <button className="dropdown-item-btn logout-btn" onClick={handleLogout}>
                   <LogOut size={16} />
@@ -256,14 +377,6 @@ export const Navbar = () => {
               <span>Sign In</span>
             </Link>
           )}
-
-          <div className="mobile-theme-row">
-            <span>Theme Mode</span>
-            <button className="mobile-theme-toggle" onClick={toggleTheme}>
-              {theme === 'light' ? <Sun size={16} /> : <Moon size={16} />}
-              <span>{theme === 'light' ? 'Light' : 'Dark'}</span>
-            </button>
-          </div>
         </div>
       )}
     </header>

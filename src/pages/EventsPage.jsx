@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { eventsData, categoriesData } from '../data/mockData';
+import { api } from '../services/api';
 import { EventCard } from '../components/EventCard/EventCard';
-import { Search, Filter, Grid, List } from 'lucide-react';
+import { Search, Grid, List, RefreshCw, AlertCircle } from 'lucide-react';
 import './EventsPage.css';
 
 export const EventsPage = () => {
@@ -13,24 +13,41 @@ export const EventsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(categoryParam);
   const [searchQuery, setSearchQuery] = useState(searchQueryParam);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
+  
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchEvents = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.getPublicEvents({ category: selectedCategory });
+      setEvents(response.events || []);
+    } catch (err) {
+      console.error('Failed to load events from backend:', err);
+      setError(err.message || 'Unable to connect to backend server.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (categoryParam) setSelectedCategory(categoryParam);
   }, [categoryParam]);
 
-  const filteredEvents = eventsData.filter((evt) => {
-    const matchesCategory =
-      selectedCategory === 'all' ||
-      evt.categoryId === selectedCategory ||
-      evt.category.toLowerCase().includes(selectedCategory.toLowerCase());
+  useEffect(() => {
+    fetchEvents();
+  }, [selectedCategory]);
 
+  const filteredEvents = events.filter((evt) => {
     const matchesSearch =
       !searchQuery ||
-      evt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      evt.college.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      evt.location.toLowerCase().includes(searchQuery.toLowerCase());
+      evt.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      evt.college?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      evt.location?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesCategory && matchesSearch;
+    return matchesSearch;
   });
 
   return (
@@ -119,14 +136,29 @@ export const EventsPage = () => {
 
         {/* Results Counter */}
         <div className="results-count-bar">
-          <span>Showing {filteredEvents.length} events</span>
+          <span>{loading ? 'Loading events...' : `Showing ${filteredEvents.length} events`}</span>
         </div>
 
-        {/* Events Grid / List */}
-        {filteredEvents.length === 0 ? (
+        {/* Loading / Error / Empty States */}
+        {loading ? (
+          <div className="no-results-box" style={{ padding: '60px 20px' }}>
+            <RefreshCw size={32} className="spin-icon" style={{ animation: 'spin 1s linear infinite', color: '#8B5CF6' }} />
+            <h3 style={{ marginTop: '16px' }}>Fetching Events from Festora Backend</h3>
+            <p>Connecting to database...</p>
+          </div>
+        ) : error ? (
+          <div className="no-results-box" style={{ borderColor: 'rgba(239, 68, 68, 0.3)' }}>
+            <AlertCircle size={32} color="#EF4444" />
+            <h3 style={{ marginTop: '12px', color: '#F87171' }}>Backend Connection Error</h3>
+            <p>{error}</p>
+            <button className="reset-filter-btn" onClick={fetchEvents} style={{ marginTop: '16px' }}>
+              Retry Connection
+            </button>
+          </div>
+        ) : filteredEvents.length === 0 ? (
           <div className="no-results-box">
             <h3>No events found</h3>
-            <p>Try clearing your search query or selecting a different category filter.</p>
+            <p>There are currently no published events matching your search criteria.</p>
             <button
               className="reset-filter-btn"
               onClick={() => {

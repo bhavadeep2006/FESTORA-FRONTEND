@@ -1,18 +1,50 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { userProfile as defaultUserProfile } from '../data/mockData';
-import { User, Mail, Phone, GraduationCap, Calendar, BookOpen, MapPin, Edit3, ShieldCheck, Ticket } from 'lucide-react';
+import { User, Mail, Phone, GraduationCap, Calendar, BookOpen, MapPin, Edit3, ShieldCheck, Ticket, Sun, Moon, Laptop } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './ProfilePage.css';
 
 export const ProfilePage = () => {
   const { user, updateUserProfile, userTickets, hostedEvents } = useAuth();
-  const currentProfile = user || defaultUserProfile;
+  const currentProfile = {
+    ...defaultUserProfile,
+    ...user,
+    avatar: user?.avatar || defaultUserProfile.avatar
+  };
   const profile = currentProfile;
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(currentProfile);
+
+  const [themeMode, setThemeMode] = useState(() => {
+    return localStorage.getItem('festora-theme') || 'light';
+  });
+
+  const changeThemeMode = (mode) => {
+    setThemeMode(mode);
+    try {
+      localStorage.setItem('festora-theme', mode);
+    } catch (e) {}
+    let targetTheme = mode;
+    if (mode === 'system') {
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      targetTheme = systemDark ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', targetTheme);
+    window.dispatchEvent(new CustomEvent('festora-theme-change', { detail: mode }));
+  };
+
+  React.useEffect(() => {
+    const handleCustomEvent = (e) => {
+      if (e.detail) {
+        setThemeMode(e.detail);
+      }
+    };
+    window.addEventListener('festora-theme-change', handleCustomEvent);
+    return () => window.removeEventListener('festora-theme-change', handleCustomEvent);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -259,6 +291,82 @@ export const ProfilePage = () => {
                   <Ticket size={16} />
                   <span>View My Registered Tickets</span>
                 </Link>
+              </div>
+            </div>
+
+            {/* Appearance & Theme Settings Card */}
+            <div className="details-card" style={{ gridColumn: '1 / -1' }}>
+              <h2 className="card-section-title">Appearance & Portal Theme</h2>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
+                Customize your Festora visual mode across light, dark, or system defaults.
+              </p>
+
+              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => changeThemeMode('light')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    border: themeMode === 'light' ? '2px solid #8B5CF6' : '1px solid var(--border-card)',
+                    background: themeMode === 'light' ? 'rgba(139, 92, 246, 0.15)' : 'var(--surface-secondary)',
+                    color: themeMode === 'light' ? '#8B5CF6' : 'var(--text-main)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <Sun size={18} />
+                  <span>☀ Light</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => changeThemeMode('dark')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    border: themeMode === 'dark' ? '2px solid #8B5CF6' : '1px solid var(--border-card)',
+                    background: themeMode === 'dark' ? 'rgba(139, 92, 246, 0.15)' : 'var(--surface-secondary)',
+                    color: themeMode === 'dark' ? '#8B5CF6' : 'var(--text-main)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <Moon size={18} />
+                  <span>🌙 Dark</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => changeThemeMode('system')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    border: themeMode === 'system' ? '2px solid #8B5CF6' : '1px solid var(--border-card)',
+                    background: themeMode === 'system' ? 'rgba(139, 92, 246, 0.15)' : 'var(--surface-secondary)',
+                    color: themeMode === 'system' ? '#8B5CF6' : 'var(--text-main)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <Laptop size={18} />
+                  <span>💻 System</span>
+                </button>
               </div>
             </div>
           </motion.div>

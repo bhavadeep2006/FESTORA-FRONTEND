@@ -10,8 +10,18 @@
       (function() {
         try {
           var saved = localStorage.getItem('festora-theme');
-          var theme = saved ? saved : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-          document.documentElement.setAttribute('data-theme', theme);
+          var targetTheme = 'light';
+          if (saved === 'dark') {
+            targetTheme = 'dark';
+          } else if (saved === 'light') {
+            targetTheme = 'light';
+          } else if (saved === 'system') {
+            targetTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          } else {
+            // New user with no saved preference -> Default to Light theme
+            targetTheme = 'light';
+          }
+          document.documentElement.setAttribute('data-theme', targetTheme);
         } catch (e) {}
       })();
     </script>

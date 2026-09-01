@@ -26,14 +26,20 @@ export const OrganizerLoginPage = () => {
     setIsSubmitting(true);
     setError('');
 
+    console.log('[ORGANIZER LOGIN FRONTEND]');
+    console.log('email submitted:', email.trim());
+    console.log('login endpoint: /api/organizer/login');
+
     try {
       const res = await organizerLogin(email, password);
+      console.log('response status:', res.success ? 200 : 'ERROR');
       if (res.success) {
         navigate('/organizer');
       } else {
         setError(res.error || 'Invalid organizer credentials.');
       }
     } catch (err) {
+      console.error('[ORGANIZER LOGIN FRONTEND] Error:', err);
       setError('An error occurred during authentication.');
     } finally {
       setIsSubmitting(false);
@@ -70,18 +76,6 @@ export const OrganizerLoginPage = () => {
             </div>
           )}
 
-          {/* Local Demo Credentials Hint Box */}
-          <div className="auth-alert success" style={{ backgroundColor: 'rgba(139, 92, 246, 0.08)', borderColor: 'rgba(139, 92, 246, 0.25)', color: 'var(--text-main)', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: 'var(--strong-lavender)' }}>
-              <Info size={16} />
-              <span>Local Demo Credentials:</span>
-            </div>
-            <div style={{ fontSize: '0.825rem', fontFamily: 'monospace', margin: '4px 0 0 0' }}>
-              Email: <strong>organizer@festora.demo</strong><br />
-              Password: <strong>Festora@123</strong>
-            </div>
-          </div>
-
           <form onSubmit={handleSubmit} className="auth-form" noValidate style={{ marginTop: '16px' }}>
             {/* Email Field */}
             <div className="form-group">
@@ -91,7 +85,7 @@ export const OrganizerLoginPage = () => {
                 <input
                   id="org-email"
                   type="email"
-                  placeholder="organizer@festora.demo"
+                  placeholder="organizer@organization.com"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);

@@ -1,52 +1,78 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { eventsData } from '../../data/mockData';
-import { MapPin, Calendar, ArrowRight, Flame } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
+import { eventsData as fallbackEvents } from '../../data/mockData';
+import { MapPin, ArrowRight, Flame } from 'lucide-react';
 import './ThisWeekEvents.css';
 
 export const ThisWeekEvents = () => {
-  // Use first 3 events for "This Week In Hyderabad"
-  const thisWeekList = eventsData.slice(0, 3);
+  const [eventsList, setEventsList] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const response = await api.getPublicEvents();
+        if (response.events && response.events.length > 0) {
+          setEventsList(response.events);
+        } else {
+          setEventsList(fallbackEvents);
+        }
+      } catch (err) {
+        setEventsList(fallbackEvents);
+      }
+    };
+    loadEvents();
+  }, []);
+
+  const displayList = eventsList.length > 0 
+    ? [...eventsList, ...eventsList, ...eventsList, ...eventsList]
+    : [...fallbackEvents, ...fallbackEvents, ...fallbackEvents, ...fallbackEvents];
+
+  const handleCardClick = (e, evt) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const eventId = typeof evt === 'object' ? evt?.id : evt;
+    console.log('[TRENDING EVENT CLICK]', { id: eventId, title: typeof evt === 'object' ? evt?.title : undefined });
+    if (eventId) {
+      navigate(`/events/${eventId}`);
+    }
+  };
 
   return (
     <section className="this-week-section">
       <div className="section-container">
         
-        <motion.div 
-          className="this-week-bar"
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-20px' }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div className="this-week-bar">
           <div className="this-week-label">
-            <Flame size={16} className="flame-icon" />
-            <span>THIS WEEK IN HYDERABAD</span>
+            <Flame size={18} className="flame-icon" />
+            <span>TRENDING THIS WEEK</span>
           </div>
 
-          <div className="this-week-items-row">
-            {thisWeekList.map((evt, idx) => (
-              <motion.div
-                key={evt.id}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.1 + idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Link to={`/events/${evt.id}`} className="this-week-item">
-                  <span className="this-week-date">{evt.date.split(',')[0]}</span>
+          <div className="marquee-outer-container">
+            <div className="marquee-track">
+              {displayList.map((evt, idx) => (
+                <div 
+                  key={`${evt.id}-${idx}`} 
+                  onClick={(e) => handleCardClick(e, evt)} 
+                  className="this-week-item"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleCardClick(e, evt); }}
+                >
+                  <span className="this-week-date">
+                    {evt.event_date ? new Date(evt.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : (evt.date ? evt.date.split(',')[0] : 'Upcoming')}
+                  </span>
                   <div className="this-week-info">
                     <span className="this-week-title">{evt.title}</span>
-                    <span className="this-week-venue"><MapPin size={11} /> {evt.college}</span>
+                    <span className="this-week-venue"><MapPin size={11} /> {evt.venue || evt.college || 'Campus Venue'}</span>
                   </div>
                   <ArrowRight size={13} className="item-arrow" />
-                </Link>
-              </motion.div>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
-        </motion.div>
+        </div>
 
       </div>
     </section>

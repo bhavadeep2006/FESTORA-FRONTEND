@@ -16,7 +16,7 @@ export const Footer = () => {
             <span className="footer-wordmark">FESTORA</span>
           </div>
           <p className="footer-tagline">
-            Discover college events around Hyderabad. Connecting students, cultural councils, and campus communities across IIIT, JNTU, CBIT, OU, and top universities.
+            Discover live events, concerts, hackathons, and workshops near you. Connecting event organizers, communities, and attendees nationwide.
           </p>
           <div className="footer-social-row">
             <a href="#twitter" aria-label="Twitter" className="social-icon-btn"><Twitter size={16} /></a>
@@ -43,9 +43,9 @@ export const Footer = () => {
           <a href="mailto:support@festora.in" className="footer-link">Contact</a>
         </div>
 
-        {/* Col 4: Hyderabad Hubs */}
+        {/* Col 4: Event Hubs */}
         <div className="footer-links-col">
-          <h4 className="footer-col-title">Hyderabad Hubs</h4>
+          <h4 className="footer-col-title">Event Hubs</h4>
           <Link to="/events?location=gachibowli" className="footer-link">Gachibowli</Link>
           <Link to="/events?location=madhapur" className="footer-link">Madhapur</Link>
           <Link to="/events?location=hitec-city" className="footer-link">HITEC City</Link>
@@ -56,7 +56,7 @@ export const Footer = () => {
 
       <div className="footer-bottom-bar">
         <p>&copy; 2026 Festora Inc. &bull; All rights reserved.</p>
-        <p className="made-with-love">Crafted with <Heart size={14} className="heart-icon" /> for Hyderabad Campus Energy</p>
+        <p className="made-with-love">Crafted with <Heart size={14} className="heart-icon" /> for Live Event Experiences</p>
       </div>
     </footer>
   );

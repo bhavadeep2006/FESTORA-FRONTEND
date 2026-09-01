@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { FestoraLogo } from '../components/FestoraLogo/FestoraLogo';
+import { api } from '../services/api';
 import { 
   Sparkles, 
   User, 
@@ -16,7 +17,9 @@ import {
   Globe, 
   CheckCircle, 
   ArrowLeft, 
-  Send 
+  Send,
+  Tag,
+  AlertCircle
 } from 'lucide-react';
 import './HostEventPage.css';
 
@@ -41,6 +44,7 @@ export const HostEventPage = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -93,15 +97,21 @@ export const HostEventPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitError(null);
+    try {
+      await api.submitHostEventRequest(formData);
       setSubmitted(true);
-    }, 600);
+    } catch (err) {
+      console.error('Error submitting host event request:', err);
+      setSubmitError(err.message || 'Failed to submit request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -298,6 +308,7 @@ export const HostEventPage = () => {
                 <div className="form-group">
                   <label htmlFor="host-category">Event Category *</label>
                   <div className={`input-wrapper select-wrapper ${errors.category ? 'has-error' : ''}`}>
+                    <Tag size={18} className="input-icon" />
                     <select
                       id="host-category"
                       value={formData.category}
@@ -387,8 +398,15 @@ export const HostEventPage = () => {
                 </div>
               </div>
 
+              {submitError && (
+                <div className="auth-alert error" style={{ marginTop: '20px' }} role="alert">
+                  <AlertCircle size={18} />
+                  <span>{submitError}</span>
+                </div>
+              )}
+
               {/* Submit CTA */}
-              <div style={{ marginTop: '32px' }}>
+              <div style={{ marginTop: '24px' }}>
                 <button
                   type="submit"
                   className="auth-btn-primary"

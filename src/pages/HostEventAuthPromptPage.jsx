@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FestoraLogo } from '../components/FestoraLogo/FestoraLogo';
 import { ArrowLeft, ArrowRight, Sparkles, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 import './AuthPages.css';
 
 const GoogleIcon = () => (
@@ -32,9 +33,7 @@ export const HostEventAuthPromptPage = () => {
   const { login } = useAuth();
 
   const handleGoogleSignIn = () => {
-    login('organizer@festora.in', 'password').then(() => {
-      navigate('/host-event');
-    });
+    window.location.href = api.googleLoginUrl();
   };
 
   return (

@@ -484,3 +484,48 @@
     justify-content: center;
   }
 }
+
+/* FESTORA Tab Styling for Passes/Events */
+.dash-tab-bar {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.tab-buttons {
+  display: inline-flex;
+  gap: 8px;
+  background: var(--surface-card, #1E1B2E);
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--border-card, rgba(255, 255, 255, 0.08));
+}
+
+.dash-filter-btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #9CA3AF);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.dash-filter-btn:hover {
+  color: var(--text-main, #FFFFFF);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dash-filter-btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--strong-lavender, #8B5CF6);
+}
+
+.dash-filter-btn.active {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}

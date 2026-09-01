@@ -30,7 +30,8 @@ export const collegesData = [
 
 export const eventsData = [
   {
-    id: 'felicity-2026',
+    id: 23,
+    alias: 'felicity-2026',
     title: 'FELICITY 2026 — Annual Cultural & Tech Fest',
     college: "IIIT Hyderabad",
     location: "Gachibowli, Hyderabad",
@@ -39,7 +40,7 @@ export const eventsData = [
     category: 'Cultural Fests',
     categoryId: 'cultural',
     attendees: '14,200+ Registered',
-    tag: 'Trending #1 in Hyd',
+    tag: 'Trending #1 Event',
     price: 'Free Student Pass',
     badgeColor: '#8B5CF6',
     banner: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop',
@@ -61,7 +62,8 @@ export const eventsData = [
     ]
   },
   {
-    id: 'hyd-hack-4',
+    id: 24,
+    alias: 'hyd-hack-4',
     title: 'HYD-HACK 4.0 National Hackathon',
     college: 'JNTU Hyderabad',
     location: 'Kukatpally, Hyderabad',
@@ -91,7 +93,8 @@ export const eventsData = [
     ]
   },
   {
-    id: 'cyber-pulse-hyd',
+    id: 25,
+    alias: 'cyber-pulse-hyd',
     title: 'CYBER PULSE Pro-Nite ft. EDM Stars',
     college: 'CBIT Hyderabad',
     location: 'Gandipet, Hyderabad',

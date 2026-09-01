@@ -1,54 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, GraduationCap, Calendar, Phone, ArrowRight, CheckCircle, Check } from 'lucide-react';
+import { Mail, Lock, User, GraduationCap, Calendar, Phone, ArrowRight, CheckCircle, ArrowLeft, RefreshCw, KeyRound, AlertCircle } from 'lucide-react';
 import { FestoraLogo } from '../components/FestoraLogo/FestoraLogo';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
+import { GoogleIcon } from './SignInPage';
 import './AuthPages.css';
-
-const GoogleIcon = () => (
-  <svg className="google-svg-icon" viewBox="0 0 24 24" width="20" height="20">
-    <path
-      fill="#4285F4"
-      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-    />
-    <path
-      fill="#34A853"
-      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-    />
-    <path
-      fill="#FBBC05"
-      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-    />
-    <path
-      fill="#EA4335"
-      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-    />
-  </svg>
-);
 
 export const SignUpPage = () => {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/profile';
+  const redirectTo = searchParams.get('redirect') || '/';
+
+  // Step 1: SignUp Form State, Step 2: OTP Verification State
+  const [step, setStep] = useState('signup'); // 'signup' | 'otp'
 
   const [formData, setFormData] = useState({
-    name: '',
+    full_name: '',
     email: '',
     phone: '',
     password: '',
     confirmPassword: '',
     college: '',
-    year: ''
+    year_of_study: '',
+    department: 'General'
   });
 
+  const [otpCode, setOtpCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formSuccess, setFormSuccess] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [resendStatus, setResendStatus] = useState({ loading: false, message: '', error: '' });
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
-  const { signup } = useAuth();
+  const { register, verifyOtp, resendOtp } = useAuth();
   const navigate = useNavigate();
+
+  // Cooldown timer for OTP Resend
+  useEffect(() => {
+    let timer;
+    if (cooldownSeconds > 0) {
+      timer = setInterval(() => {
+        setCooldownSeconds((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [cooldownSeconds]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -57,24 +55,28 @@ export const SignUpPage = () => {
     }
   };
 
-  const validateForm = () => {
+  const validateSignUpForm = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'Full Name is required.';
+    if (!formData.full_name.trim()) {
+      newErrors.full_name = 'Full Name is required.';
     }
 
     if (!formData.email.trim()) {
       newErrors.email = 'Email address is required.';
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!emailRegex.test(formData.email.trim())) {
       newErrors.email = 'Please enter a valid email address.';
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required.';
     }
 
     if (!formData.password) {
       newErrors.password = 'Password is required.';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters long.';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long.';
     }
 
     if (!formData.confirmPassword) {
@@ -84,56 +86,111 @@ export const SignUpPage = () => {
     }
 
     if (!formData.college.trim()) {
-      newErrors.college = 'Please enter your college / university / organization.';
+      newErrors.college = 'College name is required.';
     }
 
-    if (!formData.year) {
-      newErrors.year = 'Please select your year of study.';
+    if (!formData.year_of_study) {
+      newErrors.year_of_study = 'Please select your year of study.';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSignUpSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateSignUpForm()) return;
 
     setIsSubmitting(true);
+    setErrors({});
     try {
-      await signup(formData);
-      setFormSuccess(true);
-      setTimeout(() => {
-        navigate(redirectTo);
-      }, 700);
+      const payload = {
+        full_name: formData.full_name.trim(),
+        email: formData.email.toLowerCase().trim(),
+        phone: formData.phone.trim(),
+        password: formData.password,
+        college: formData.college.trim(),
+        year_of_study: formData.year_of_study,
+        department: formData.department.trim() || 'General'
+      };
+
+      console.log('[SIGNUP] register submitted:', payload);
+      const res = await register(payload);
+      console.log('[SIGNUP] register response:', res);
+      
+      if (res) {
+        console.log('[SIGNUP] switching to OTP screen');
+        setStep('otp');
+        setCooldownSeconds(30);
+      } else {
+        console.warn('[SIGNUP] Empty response from register API');
+      }
     } catch (err) {
-      setErrors({ form: 'Failed to create account. Please try again.' });
+      console.error('[SIGNUP] Registration error caught:', err);
+      const serverMsg = err.data?.message || err.message || 'Registration failed. Please try again.';
+      setErrors({ form: serverMsg });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleGoogleSignUp = () => {
-    signup({
-      name: 'Google User',
-      email: 'user@google.com',
-      college: 'IIIT Hyderabad',
-      year: '3rd Year'
-    }).then(() => {
-      navigate(redirectTo);
-    });
+  const handleOtpVerifySubmit = async (e) => {
+    e.preventDefault();
+    if (!otpCode.trim() || otpCode.trim().length !== 6) {
+      setErrors({ otp: 'Please enter the 6-digit OTP code sent to your email.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrors({});
+    try {
+      const res = await verifyOtp(formData.email.toLowerCase().trim(), otpCode.trim());
+      if (res && res.success) {
+        navigate(redirectTo, { replace: true });
+      }
+    } catch (err) {
+      const serverMsg = err.data?.message || err.message || 'Invalid or expired OTP code.';
+      setErrors({ otp: serverMsg });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const isLengthValid = formData.password.length >= 8;
+  const handleResendOtpClick = async () => {
+    if (cooldownSeconds > 0 || resendStatus.loading) return;
+
+    setResendStatus({ loading: true, message: '', error: '' });
+    try {
+      const res = await resendOtp(formData.email.toLowerCase().trim());
+      setResendStatus({
+        loading: false,
+        message: res.message || 'A new verification code has been sent to your email.',
+        error: ''
+      });
+      setCooldownSeconds(60);
+    } catch (err) {
+      const serverMsg = err.data?.message || err.message || 'Failed to resend OTP. Please try again.';
+      setResendStatus({
+        loading: false,
+        message: '',
+        error: serverMsg
+      });
+    }
+  };
+
+  const handleGoogleSignIn = () => {
+    setIsGoogleLoading(true);
+    window.location.href = api.googleLoginUrl();
+  };
 
   return (
     <div className="auth-container-page">
       <div className="auth-card-layout">
 
-        {/* Left Visual Branding Panel (Desktop) */}
+        {/* Left Visual Branding Panel */}
         <div className="auth-brand-side">
           <div className="brand-side-content">
-            <div className="brand-badge-pill">JOIN THE COMMUNITY</div>
+            <div className="brand-badge-pill">FESTORA VERIFIED SIGNUP</div>
             <h2 className="brand-side-heading">
               Step Into the Heart of Campus Events
             </h2>
@@ -143,7 +200,7 @@ export const SignUpPage = () => {
             <div className="brand-feature-list">
               <div className="feature-item">
                 <CheckCircle size={18} className="feature-icon" />
-                <span>Personalized event recommendations</span>
+                <span>Real-time email OTP security verification</span>
               </div>
               <div className="feature-item">
                 <CheckCircle size={18} className="feature-icon" />
@@ -151,7 +208,7 @@ export const SignUpPage = () => {
               </div>
               <div className="feature-item">
                 <CheckCircle size={18} className="feature-icon" />
-                <span>Organize and showcase your college fest</span>
+                <span>Verified student digital passes</span>
               </div>
             </div>
           </div>
@@ -168,211 +225,275 @@ export const SignUpPage = () => {
             <Link to="/" className="auth-logo-link" title="Festora Home">
               <FestoraLogo size={48} isAnimated={false} />
             </Link>
-            <h1 className="auth-title">Create your account</h1>
-            <p className="auth-subtitle">
-              Join Festora and discover college events, hackathons, fests and experiences.
-            </p>
-          </div>
 
-          {formSuccess && (
-            <div className="auth-alert success" role="alert">
-              <CheckCircle size={18} />
-              <span>✓ Account created successfully! Redirecting...</span>
-            </div>
-          )}
+            {step === 'signup' ? (
+              <>
+                <h1 className="auth-title">Create your account</h1>
+                <p className="auth-subtitle">
+                  Join Festora and discover college events, hackathons, fests and experiences.
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="auth-title">Verify your Email</h1>
+                <p className="auth-subtitle">
+                  Enter the 6-digit verification code sent to <strong>{formData.email}</strong>.
+                </p>
+              </>
+            )}
+          </div>
 
           {errors.form && (
             <div className="auth-alert error" role="alert">
+              <AlertCircle size={18} />
               <span>{errors.form}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="auth-form" noValidate>
-            {/* Full Name */}
-            <div className="form-group">
-              <label htmlFor="signup-name">Full Name</label>
-              <div className={`input-wrapper ${errors.name ? 'has-error' : ''}`}>
-                <User size={18} className="input-icon" />
-                <input
-                  id="signup-name"
-                  type="text"
-                  placeholder="e.g. Bhavadeep Reddy"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  autoComplete="name"
-                  required
-                />
+          {step === 'signup' ? (
+            /* STEP 1: Registration Form */
+            <form onSubmit={handleSignUpSubmit} className="auth-form" noValidate>
+              {/* Full Name */}
+              <div className="form-group">
+                <label htmlFor="signup-name">Full Name *</label>
+                <div className={`input-wrapper ${errors.full_name ? 'has-error' : ''}`}>
+                  <User size={18} className="input-icon" />
+                  <input
+                    id="signup-name"
+                    type="text"
+                    placeholder="e.g. Bhavadeep Reddy"
+                    value={formData.full_name}
+                    onChange={(e) => handleInputChange('full_name', e.target.value)}
+                    required
+                  />
+                </div>
+                {errors.full_name && <span className="field-error-text">{errors.full_name}</span>}
               </div>
-              {errors.name && <span className="field-error-text">{errors.name}</span>}
-            </div>
 
-            {/* Email */}
-            <div className="form-group">
-              <label htmlFor="signup-email">Email</label>
-              <div className={`input-wrapper ${errors.email ? 'has-error' : ''}`}>
-                <Mail size={18} className="input-icon" />
-                <input
-                  id="signup-email"
-                  type="email"
-                  placeholder="name@college.edu"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  autoComplete="email"
-                  required
-                />
+              {/* Email */}
+              <div className="form-group">
+                <label htmlFor="signup-email">Email Address *</label>
+                <div className={`input-wrapper ${errors.email ? 'has-error' : ''}`}>
+                  <Mail size={18} className="input-icon" />
+                  <input
+                    id="signup-email"
+                    type="email"
+                    placeholder="name@college.edu"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
+                  />
+                </div>
+                {errors.email && <span className="field-error-text">{errors.email}</span>}
               </div>
-              {errors.email && <span className="field-error-text">{errors.email}</span>}
-            </div>
 
-            {/* Phone Number */}
-            <div className="form-group">
-              <label htmlFor="signup-phone">Phone Number (Optional)</label>
-              <div className="input-wrapper">
-                <Phone size={18} className="input-icon" />
-                <input
-                  id="signup-phone"
-                  type="tel"
-                  placeholder="+91 98765 43210"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  autoComplete="tel"
-                />
+              {/* Phone Number */}
+              <div className="form-group">
+                <label htmlFor="signup-phone">Phone Number *</label>
+                <div className={`input-wrapper ${errors.phone ? 'has-error' : ''}`}>
+                  <Phone size={18} className="input-icon" />
+                  <input
+                    id="signup-phone"
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    required
+                  />
+                </div>
+                {errors.phone && <span className="field-error-text">{errors.phone}</span>}
               </div>
-            </div>
 
-            {/* Password */}
-            <div className="form-group">
-              <label htmlFor="signup-password">Password</label>
-              <div className={`input-wrapper ${errors.password ? 'has-error' : ''}`}>
-                <Lock size={18} className="input-icon" />
-                <input
-                  id="signup-password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="At least 8 characters"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  autoComplete="new-password"
-                  required
-                />
+              {/* Password */}
+              <div className="form-group">
+                <label htmlFor="signup-password">Password *</label>
+                <div className={`input-wrapper ${errors.password ? 'has-error' : ''}`}>
+                  <Lock size={18} className="input-icon" />
+                  <input
+                    id="signup-password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="At least 6 characters"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    required
+                  />
+                </div>
+                {errors.password && <span className="field-error-text">{errors.password}</span>}
+              </div>
+
+              {/* Confirm Password */}
+              <div className="form-group">
+                <label htmlFor="signup-confirm-password">Confirm Password *</label>
+                <div className={`input-wrapper ${errors.confirmPassword ? 'has-error' : ''}`}>
+                  <Lock size={18} className="input-icon" />
+                  <input
+                    id="signup-confirm-password"
+                    type="password"
+                    placeholder="Repeat your password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    required
+                  />
+                </div>
+                {errors.confirmPassword && <span className="field-error-text">{errors.confirmPassword}</span>}
+              </div>
+
+              {/* College / Organization */}
+              <div className="form-group">
+                <label htmlFor="signup-college">College / University *</label>
+                <div className={`input-wrapper ${errors.college ? 'has-error' : ''}`}>
+                  <GraduationCap size={18} className="input-icon" />
+                  <input
+                    id="signup-college"
+                    type="text"
+                    placeholder="e.g. IIIT Hyderabad"
+                    value={formData.college}
+                    onChange={(e) => handleInputChange('college', e.target.value)}
+                    required
+                  />
+                </div>
+                {errors.college && <span className="field-error-text">{errors.college}</span>}
+              </div>
+
+              {/* Year of Study */}
+              <div className="form-group">
+                <label htmlFor="signup-year">Year of Study *</label>
+                <div className={`input-wrapper select-wrapper ${errors.year_of_study ? 'has-error' : ''}`}>
+                  <Calendar size={18} className="input-icon" />
+                  <select
+                    id="signup-year"
+                    value={formData.year_of_study}
+                    onChange={(e) => handleInputChange('year_of_study', e.target.value)}
+                    required
+                  >
+                    <option value="" disabled>Select Year</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                    <option value="Postgraduate">Postgraduate</option>
+                  </select>
+                </div>
+                {errors.year_of_study && <span className="field-error-text">{errors.year_of_study}</span>}
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="auth-btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Sending OTP code...' : 'Create Account & Send OTP'}
+                {!isSubmitting && <ArrowRight size={18} />}
+              </button>
+
+              {/* Divider & Google button */}
+              <div className="auth-divider">
+                <span>OR</span>
+              </div>
+
+              <button
+                type="button"
+                className="auth-btn-google"
+                onClick={handleGoogleSignIn}
+                disabled={isGoogleLoading || isSubmitting}
+              >
+                <GoogleIcon size={18} />
+                <span>{isGoogleLoading ? 'Connecting to Google...' : 'Continue with Google'}</span>
+              </button>
+
+              <div className="auth-footer-text">
+                Already have an account?{' '}
+                <Link to="/signin" className="auth-switch-link">
+                  Sign in
+                </Link>
+              </div>
+            </form>
+          ) : (
+            /* STEP 2: OTP Verification Form */
+            <form onSubmit={handleOtpVerifySubmit} className="auth-form" noValidate>
+              {resendStatus.message && (
+                <div className="auth-alert success" role="alert">
+                  <CheckCircle size={18} />
+                  <span>{resendStatus.message}</span>
+                </div>
+              )}
+
+              {resendStatus.error && (
+                <div className="auth-alert error" role="alert">
+                  <AlertCircle size={18} />
+                  <span>{resendStatus.error}</span>
+                </div>
+              )}
+
+              <div className="form-group">
+                <label htmlFor="otp-code">6-Digit Verification Code</label>
+                <div className={`input-wrapper ${errors.otp ? 'has-error' : ''}`}>
+                  <KeyRound size={18} className="input-icon" />
+                  <input
+                    id="otp-code"
+                    type="text"
+                    maxLength={6}
+                    placeholder="Enter 6-digit OTP"
+                    value={otpCode}
+                    onChange={(e) => {
+                      setOtpCode(e.target.value.replace(/\D/g, ''));
+                      if (errors.otp) setErrors({});
+                    }}
+                    style={{ letterSpacing: '4px', fontSize: '1.2rem', fontWeight: 'bold' }}
+                    required
+                  />
+                </div>
+                {errors.otp && <span className="field-error-text">{errors.otp}</span>}
+              </div>
+
+              <button
+                type="submit"
+                className="auth-btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Verifying OTP...' : 'Verify OTP & Finish'}
+                {!isSubmitting && <ArrowRight size={18} />}
+              </button>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
                 <button
                   type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setStep('signup')}
+                  className="back-to-signin-btn"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  <ArrowLeft size={16} />
+                  <span>Change Email</span>
                 </button>
-              </div>
 
-              {/* Password Requirement Hint */}
-              <div className={`password-req-hint ${isLengthValid ? 'met' : ''}`}>
-                <Check size={14} className="req-icon" />
-                <span>At least 8 characters</span>
-              </div>
-              {errors.password && <span className="field-error-text">{errors.password}</span>}
-            </div>
-
-            {/* Confirm Password */}
-            <div className="form-group">
-              <label htmlFor="signup-confirm-password">Confirm Password</label>
-              <div className={`input-wrapper ${errors.confirmPassword ? 'has-error' : ''}`}>
-                <Lock size={18} className="input-icon" />
-                <input
-                  id="signup-confirm-password"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Repeat your password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  autoComplete="new-password"
-                  required
-                />
                 <button
                   type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  onClick={handleResendOtpClick}
+                  disabled={cooldownSeconds > 0 || resendStatus.loading}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: cooldownSeconds > 0 ? 'var(--text-muted, #94a3b8)' : 'var(--primary-color, #4f46e5)',
+                    fontWeight: 'bold',
+                    cursor: cooldownSeconds > 0 ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
                 >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  <RefreshCw size={14} className={resendStatus.loading ? 'spin' : ''} />
+                  {resendStatus.loading
+                    ? 'Resending...'
+                    : cooldownSeconds > 0
+                    ? `Resend OTP in ${cooldownSeconds}s`
+                    : 'Resend OTP'}
                 </button>
               </div>
-              {errors.confirmPassword && <span className="field-error-text">{errors.confirmPassword}</span>}
-            </div>
+            </form>
+          )}
 
-            {/* College / Organization */}
-            <div className="form-group">
-              <label htmlFor="signup-college">College / Organization</label>
-              <div className={`input-wrapper ${errors.college ? 'has-error' : ''}`}>
-                <GraduationCap size={18} className="input-icon" />
-                <input
-                  id="signup-college"
-                  type="text"
-                  placeholder="e.g. IIIT Hyderabad, JNTUH, CBIT"
-                  value={formData.college}
-                  onChange={(e) => handleInputChange('college', e.target.value)}
-                  required
-                />
-              </div>
-              {errors.college && <span className="field-error-text">{errors.college}</span>}
-            </div>
-
-            {/* Year of Study */}
-            <div className="form-group">
-              <label htmlFor="signup-year">Year of Study</label>
-              <div className={`input-wrapper select-wrapper ${errors.year ? 'has-error' : ''}`}>
-                <Calendar size={18} className="input-icon" />
-                <select
-                  id="signup-year"
-                  value={formData.year}
-                  onChange={(e) => handleInputChange('year', e.target.value)}
-                  required
-                >
-                  <option value="" disabled>Select Year</option>
-                  <option value="1st Year">1st Year</option>
-                  <option value="2nd Year">2nd Year</option>
-                  <option value="3rd Year">3rd Year</option>
-                  <option value="4th Year">4th Year</option>
-                  <option value="Postgraduate / PhD">Postgraduate / PhD</option>
-                  <option value="Organizer / Faculty">Organizer / Faculty</option>
-                </select>
-              </div>
-              {errors.year && <span className="field-error-text">{errors.year}</span>}
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="auth-btn-primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Creating Account...' : 'Create Account'}
-              {!isSubmitting && <ArrowRight size={18} />}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="auth-divider">
-            <span>OR</span>
-          </div>
-
-          {/* Google Sign-In */}
-          <button
-            type="button"
-            className="auth-btn-google"
-            onClick={handleGoogleSignUp}
-          >
-            <GoogleIcon />
-            <span>Continue with Google</span>
-          </button>
-
-          {/* Footer Link */}
-          <div className="auth-footer-text">
-            Already have an account?{' '}
-            <Link to="/signin" className="auth-switch-link">
-              Sign in
-            </Link>
-          </div>
         </motion.div>
-
       </div>
     </div>
   );
